@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: Shirdi, The Abode of Sai Baba</title>
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: A linear, top-to-bottom scrolling infographic. The narrative flow begins with the enigmatic saint, moves to the sacred sites, then visualizes the institutional power of the Trust, and concludes with the socio-economic impact. This structure tells a clear, compelling story from spiritual origins to modern-day reality. -->
+    <!-- Visualization & Content Choices: SSST Finances -> Goal: Compare -> Bar Chart (Chart.js) for clear year-over-year comparison. Philanthropy -> Goal: Compare (Composition) -> Donut Chart (Chart.js) to show the breakdown of welfare activities. Pilgrim Footfall -> Goal: Inform -> Big Number Callouts for immediate impact. Key Life Events -> Goal: Change -> HTML/CSS Timeline. All choices adhere to the NO SVG/Mermaid constraint. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0B122B;
+            color: #FFFFFF;
+            font-family: 'Roboto', sans-serif;
+        }
+        .font-display {
+            font-family: 'Oswald', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .card {
+            background-color: #1A2347;
+            border: 1px solid #3A4C8C;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center my-12 md:my-16">
+            <h1 class="text-5xl md:text-7xl font-display font-bold text-cyan-400">SAI BABA OF SHIRDI</h1>
+            <p class="mt-4 text-xl md:text-2xl text-slate-300">A Legacy of Unity, Service, and Transformation</p>
+        </header>
+
+        <section class="my-16 md:my-24 text-center">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-white mb-4">SABKA MALIK EK</h2>
+            <p class="text-center text-slate-300 text-xl max-w-3xl mx-auto mb-12">"One God Governs All." This core philosophy of syncretic monotheism, blending Hindu and Islamic traditions, is the foundation of Sai Baba's universal appeal.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card p-8 rounded-lg shadow-lg">
+                    <p class="font-display text-5xl font-bold text-cyan-400">SHRADDHA</p>
+                    <p class="mt-2 text-2xl font-semibold text-slate-200">Unwavering Faith</p>
+                    <p class="mt-4 text-slate-400">Absolute trust in the Guru's guidance, providing a foundation of fearlessness and resilience.</p>
+                </div>
+                <div class="card p-8 rounded-lg shadow-lg">
+                    <p class="font-display text-5xl font-bold text-cyan-400">SABURI</p>
+                    <p class="mt-2 text-2xl font-semibold text-slate-200">Patient Perseverance</p>
+                    <p class="mt-4 text-slate-400">The calm fortitude to endure hardship, born from the conviction that faith will provide a solution.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-slate-700 my-16 md:my-24">
+        
+        <section class="my-16 md:my-24">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-white mb-12">A SAINT'S JOURNEY</h2>
+            <div class="relative">
+                <div class="border-l-4 border-cyan-400 absolute h-full top-0 left-4 md:left-1/2 md:-ml-0.5"></div>
+                <div class="mb-12 flex items-center w-full">
+                    <div class="z-10 bg-cyan-400 text-slate-900 rounded-full h-8 w-8 flex items-center justify-center font-bold">1</div>
+                    <div class="pl-8 md:pl-0 md:w-1/2 md:pr-8 md:text-right">
+                        <div class="card p-6 rounded-lg shadow-lg">
+                            <p class="font-display text-3xl font-bold text-cyan-400">c. 1858</p>
+                            <h3 class="text-xl font-bold text-white mt-2">Return to Shirdi</h3>
+                            <p class="text-slate-300 mt-2">After a mysterious absence, Baba returns permanently to Shirdi, taking up residence in a dilapidated mosque he names "Dwarkamai."</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mb-12 flex items-center w-full">
+                    <div class="z-10 bg-cyan-400 text-slate-900 rounded-full h-8 w-8 flex items-center justify-center font-bold">2</div>
+                    <div class="pl-8 w-full md:w-1/2 md:pl-8">
+                         <div class="card p-6 rounded-lg shadow-lg">
+                            <p class="font-display text-3xl font-bold text-cyan-400">1908</p>
+                            <h3 class="text-xl font-bold text-white mt-2">Gurupurnima Begins</h3>
+                            <p class="text-slate-300 mt-2">Baba gives permission for the first formal worship of him as a Guru, establishing the only festival he explicitly asked to be celebrated.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-12 flex items-center w-full">
+                    <div class="z-10 bg-cyan-400 text-slate-900 rounded-full h-8 w-8 flex items-center justify-center font-bold">3</div>
+                    <div class="pl-8 md:pl-0 md:w-1/2 md:pr-8 md:text-right">
+                        <div class="card p-6 rounded-lg shadow-lg">
+                            <p class="font-display text-3xl font-bold text-cyan-400">OCT 15, 1918</p>
+                            <h3 class="text-xl font-bold text-white mt-2">Mahasamadhi</h3>
+                            <p class="text-slate-300 mt-2">On the auspicious day of Vijayadashami, Sai Baba consciously leaves his mortal body, leaving an eternal legacy of love and service.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-slate-700 my-16 md:my-24">
+
+        <section class="my-16 md:my-24">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-white mb-4">THE PILGRIMAGE POWERHOUSE</h2>
+            <p class="text-center text-slate-300 text-lg max-w-3xl mx-auto mb-12">The Shri Saibaba Sansthan Trust (SSST) has evolved into one of India's wealthiest temple trusts, managing the constant flow of pilgrims and donations.</p>
+            <div class="card p-6 md:p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center text-white mb-2">SSST Annual Earnings Fluctuation</h3>
+                <p class="text-center text-slate-400 mb-8">This chart shows the Trust's earnings before, during, and after the COVID-19 pandemic, highlighting its financial resilience.</p>
+                <div class="chart-container">
+                    <canvas id="financeChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <hr class="border-slate-700 my-16 md:my-24">
+
+        <section class="my-16 md:my-24">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-white mb-4">SERVICE AS A MISSION</h2>
+            <p class="text-center text-slate-300 text-lg max-w-3xl mx-auto mb-12">The Trust channels its immense revenue into vast philanthropic work, functioning as a regional welfare state and embodying Baba's message of compassion.</p>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                 <div class="card p-6 md:p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-center text-white mb-2">Philanthropic Focus</h3>
+                    <p class="text-center text-slate-400 mb-8">A breakdown of the Trust's major welfare activities, turning devotion into social infrastructure.</p>
+                    <div class="chart-container" style="height: 300px; max-height: 350px;">
+                        <canvas id="philanthropyChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl">🏥</div>
+                        <div>
+                            <h4 class="font-bold text-xl text-white">State-of-the-Art Hospitals</h4>
+                            <p class="text-slate-300">Two major hospitals provide free and heavily subsidized treatment, including complex cardiac and neurosurgeries.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl">🍲</div>
+                        <div>
+                            <h4 class="font-bold text-xl text-white">Massive Free Meals (Annadanam)</h4>
+                            <p class="text-slate-300">The Shri Sai Prasadalaya serves tens of thousands of free, hygienic meals to pilgrims every single day.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                         <div class="text-4xl">🎓</div>
+                        <div>
+                            <h4 class="font-bold text-xl text-white">Educational Institutions</h4>
+                            <p class="text-slate-300">The Trust runs schools, a college, and a technical institute, providing education to the local population.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <hr class="border-slate-700 my-16 md:my-24">
+
+        <section class="my-16 md:my-24 text-center">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-white mb-12">THE SHIRDI ECOSYSTEM</h2>
+            <p class="text-center text-slate-300 text-lg max-w-3xl mx-auto mb-12">The constant, massive influx of pilgrims has transformed Shirdi from a quiet village into a bustling "pilgrimage-based economy."</p>
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <p class="font-display text-7xl font-bold text-cyan-400">60k</p>
+                    <p class="mt-2 text-xl font-semibold text-slate-200">Average Daily Visitors</p>
+                </div>
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <p class="font-display text-7xl font-bold text-cyan-400">100k+</p>
+                    <p class="mt-2 text-xl font-semibold text-slate-200">Festival Day Visitors</p>
+                </div>
+                <div class="card p-6 rounded-lg shadow-lg">
+                    <p class="font-display text-7xl font-bold text-cyan-400">✈️</p>
+                    <p class="mt-2 text-xl font-semibold text-slate-200">International Airport (2017)</p>
+                </div>
+             </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const commonTooltipOptions = {
+                plugins: {
+                    tooltip: {
+                        backgroundColor: '#0B122B',
+                        titleColor: '#67E8F9',
+                        bodyColor: '#FFFFFF',
+                        titleFont: { size: 16, weight: 'bold', family: 'Roboto' },
+                        bodyFont: { size: 14, family: 'Roboto' },
+                        padding: 12,
+                        cornerRadius: 4,
+                        displayColors: false,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            };
+            
+            const financeCtx = document.getElementById('financeChart').getContext('2d');
+            new Chart(financeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pre-COVID Average', 'COVID-era Average', '2022-23'],
+                    datasets: [{
+                        label: 'Annual Earnings',
+                        data: [800, 400, 900],
+                        backgroundColor: ['#0E7490', '#581C87', '#22D3EE'],
+                        borderColor: ['#0E7490', '#581C87', '#22D3EE'],
+                        borderWidth: 2,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { 
+                                color: '#94A3B8',
+                                font: { size: 12 },
+                                callback: function(value) { return '₹' + value + ' Cr' }
+                            },
+                             title: {
+                                display: true,
+                                text: 'Earnings in Crore Rupees',
+                                color: '#CBD5E1'
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#F8FAFC', font: { size: 14, weight: 'bold' } }
+                        }
+                    },
+                    plugins: { ...commonTooltipOptions.plugins, legend: { display: false } }
+                }
+            });
+
+            const philanthropyCtx = document.getElementById('philanthropyChart').getContext('2d');
+            new Chart(philanthropyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Healthcare', 'Annadanam (Free Meals)', 'Education', 'Infrastructure'],
+                    datasets: [{
+                        label: 'Welfare Focus',
+                        data: [45, 30, 15, 10],
+                        backgroundColor: ['#22D3EE', '#0E7490', '#581C87', '#A78BFA'],
+                        borderColor: '#1A2347',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        ...commonTooltipOptions.plugins,
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#F8FAFC',
+                                font: { size: 12 },
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: Australia's Visitor Economy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: The infographic follows a compelling linear narrative designed for vertical scrolling. It starts with a powerful hook: the record-breaking expenditure figure to grab attention. It then builds the story by visualizing the tourism recovery (Change Over Time), followed by a comparative analysis of international source markets (Volume vs. Value). The narrative then broadens to showcase Australia's dual appeal (Urban Hubs vs. Natural Wonders) and concludes with an actionable "Strategic Travel Planning" section that provides seasonal advice. This top-down structure—from macro-economic impact to practical travel tips—makes the complex report data accessible and useful. -->
+    <!-- Visualization & Content Choices: 
+    - Visitor Expenditure: Report Info -> Total visitor spend 2024. Goal -> Inform. Viz -> Single Big Number. Justification -> High-impact method to convey the most significant economic metric. Method -> HTML/Tailwind.
+    - Recovery Trend: Report Info -> Visitor & Expenditure data 2019-2024. Goal -> Compare/Change. Viz -> Dual-Axis Line & Bar Chart. Justification -> The best visualization to show the relationship between two different metrics (volume vs. value) over time, highlighting that value recovered faster than volume. Library -> Chart.js (Canvas).
+    - International Markets: Report Info -> Arrivals & Spend by country. Goal -> Compare Composition. Viz -> Two side-by-side Donut Charts. Justification -> Perfect for showing and comparing the parts of a whole, clearly illustrating the NZ (volume) vs. China (value) story. Library -> Chart.js (Canvas).
+    - Destination Types: Report Info -> Dual appeal of cities and nature. Goal -> Organize. Viz -> Themed Icon-driven Stat Cards. Justification -> A clean, scannable way to present Australia's core tourism assets without complex charts. Method -> HTML/Tailwind + Unicode.
+    - Best Time to Visit: Report Info -> Detailed climate and event data. Goal -> Organize/Inform. Viz -> HTML Table. Justification -> The most effective and readable format for presenting dense, comparative seasonal information for travel planning. Method -> HTML/Tailwind.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        .donut-chart-container { position: relative; width: 100%; max-width: 300px; margin-left: auto; margin-right: auto; height: 300px; max-height: 300px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .section-title { font-size: 2.25rem; font-weight: 900; line-height: 1.2; color: #162447; }
+        .kicker { font-weight: 700; color: #1f4068; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-card { background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.07); padding: 2rem; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased">
+
+    <header class="bg-white shadow-sm py-6">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 leading-tight">AUSTRALIA'S VISITOR ECONOMY</h1>
+            <p class="text-xl text-gray-600 mt-2">A Visual Report on Tourism Trends, Destinations & Timing</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-16">
+
+        <section id="hook" class="text-center mb-16">
+            <p class="kicker mb-2">A RECORD-BREAKING RECOVERY</p>
+            <h2 class="section-title mb-4">Visitor Spending Soars to New Heights</h2>
+            <div class="stat-card inline-block">
+                <div class="text-7xl md:text-8xl font-black text-[#e43f5a]">$159.17 Billion</div>
+                <p class="text-xl font-bold text-gray-700 mt-2">Total Visitor Expenditure in 2024 (AUD)</p>
+            </div>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mt-8">Australia's tourism sector has achieved a remarkable financial comeback, with total spending now 26% higher than pre-pandemic levels. This surge highlights a shift towards a higher-value visitor economy.</p>
+        </section>
+
+        <section id="recovery" class="mb-16">
+            <div class="text-center">
+                <p class="kicker mb-2">THE RECOVERY STORY</p>
+                <h2 class="section-title mb-4">Value Outpaces Volume</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-8">The data tells a clear story: while visitor numbers have steadily returned to 2019 levels, visitor spending recovered much faster and has grown significantly. This indicates that today's visitors are, on average, spending more per trip.</p>
+            </div>
+            <div class="stat-card">
+                <div class="chart-container">
+                    <canvas id="recoveryChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section id="markets" class="mb-16">
+            <div class="text-center mb-12">
+                <p class="kicker mb-2">INTERNATIONAL MARKETS</p>
+                <h2 class="section-title mb-4">A Tale of Two Metrics: Volume vs. Value</h2>
+                 <p class="max-w-3xl mx-auto text-lg text-gray-600">Analyzing the top international source markets reveals a crucial distinction. While proximity drives high visitor volume from New Zealand, the Chinese market delivers unparalleled economic value, making it the most lucrative for the Australian tourism industry.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 stat-card p-8">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Top 5 Markets by Visitor Arrivals</h3>
+                    <div class="donut-chart-container">
+                        <canvas id="arrivalsChart"></canvas>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Top 5 Markets by Total Spend</h3>
+                    <div class="donut-chart-container">
+                        <canvas id="spendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="appeal" class="mb-16">
+            <div class="text-center mb-12">
+                <p class="kicker mb-2">AUSTRALIA'S DUAL APPEAL</p>
+                <h2 class="section-title mb-4">From Urban Energy to Natural Wonders</h2>
+                 <p class="max-w-3xl mx-auto text-lg text-gray-600">The nation's tourism strength lies in its diverse offerings, catering to travelers seeking both the vibrant culture of its world-class cities and the awe-inspiring beauty of its iconic natural landscapes.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="stat-card text-center">
+                    <div class="text-6xl mb-4">🏙️</div>
+                    <h3 class="text-3xl font-bold text-[#1f4068] mb-4">Vibrant Urban Hubs</h3>
+                    <p class="text-gray-600">Cities like Sydney and Melbourne are premier gateways, celebrated for their iconic landmarks, multicultural food scenes, and world-class arts and culture, attracting millions of visitors annually.</p>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="text-6xl mb-4">🏞️</div>
+                    <h3 class="text-3xl font-bold text-[#1b1b2f] mb-4">Iconic Natural Wonders</h3>
+                    <p class="text-gray-600">Australia is home to global bucket-list destinations like the Great Barrier Reef and Uluru, offering unparalleled opportunities for adventure and deep cultural immersion in spectacular settings.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="planning">
+            <div class="text-center mb-12">
+                 <p class="kicker mb-2">STRATEGIC TRAVEL PLANNING</p>
+                 <h2 class="section-title mb-4">The Best Time to Visit</h2>
+                 <p class="max-w-4xl mx-auto text-lg text-gray-600">Planning a trip to a continent requires a smart approach. Australia's vast size means the ideal time to visit varies dramatically by region. This guide helps you match your travel dates to the best weather, events, and value across the country.</p>
+            </div>
+            <div class="stat-card overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3">City</th>
+                            <th class="px-6 py-3">Best Months</th>
+                            <th class="px-6 py-3">Weather Profile</th>
+                            <th class="px-6 py-3">Crowds & Price</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <tr class="hover:bg-gray-50"><td class="px-6 py-4 font-semibold">Sydney</td><td class="px-6 py-4">Oct–Nov, Mar–Apr</td><td class="px-6 py-4">Warm & sunny days</td><td class="px-6 py-4">Moderate</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-6 py-4 font-semibold">Melbourne</td><td class="px-6 py-4">Mar–May, Sep–Nov</td><td class="px-6 py-4">Mild & pleasant</td><td class="px-6 py-4">Moderate</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-6 py-4 font-semibold">Cairns</td><td class="px-6 py-4">Apr–Sep</td><td class="px-6 py-4">Warm, dry & less humid</td><td class="px-6 py-4">High</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-6 py-4 font-semibold">Perth</td><td class="px-6 py-4">Sep–Nov</td><td class="px-6 py-4">Warm, sunny, wildflowers</td><td class="px-6 py-4">Moderate</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-6 py-4 font-semibold">Uluru</td><td class="px-6 py-4">May–Sep</td><td class="px-6 py-4">Mild days, cool nights</td><td class="px-6 py-4">High</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#162447] text-white mt-16">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p class="font-bold mb-3">Australia's Major Cities</p>
+            <p class="text-sm text-gray-300">Sydney, Melbourne, Brisbane, Perth, Adelaide, Canberra, Hobart, Darwin, Gold Coast, Cairns</p>
+            <p class="text-xs text-gray-400 mt-4">Data synthesized from "Australia's Visitor Economy" report.</p>
+        </div>
+    </footer>
+
+    <script>
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const palette = {
+            red: '#e43f5a',
+            darkBlue: '#162447',
+            mediumBlue: '#1f4068',
+            lightBlue: '#1b1b2f',
+            offWhite: '#f8f9fa'
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const recoveryCtx = document.getElementById('recoveryChart').getContext('2d');
+            new Chart(recoveryCtx, {
+                data: {
+                    labels: ['2019', '2022', '2023', '2024'],
+                    datasets: [{
+                        type: 'bar',
+                        label: 'Expenditure (AUD $B)',
+                        data: [126.07, 111.63, 152.60, 159.17],
+                        backgroundColor: 'rgba(228, 63, 90, 0.7)',
+                        yAxisID: 'y1',
+                    }, {
+                        type: 'line',
+                        label: 'Visitors (Millions)',
+                        data: [126.12, 111.63, 122.80, 126.79],
+                        borderColor: palette.darkBlue,
+                        backgroundColor: 'rgba(22, 36, 71, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        yAxisID: 'y',
+                        borderWidth: 3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { position: 'left', title: { display: true, text: 'Visitors (Millions)' } },
+                        y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Expenditure (AUD $B)' } }
+                    },
+                    plugins: { legend: { position: 'top' }, tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                }
+            });
+
+            const arrivalsCtx = document.getElementById('arrivalsChart').getContext('2d');
+            new Chart(arrivalsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['New Zealand', 'China', 'USA', 'UK', 'India'],
+                    datasets: [{
+                        label: 'Arrivals (Millions)',
+                        data: [1.2, 0.86, 0.67, 0.61, 0.42],
+                        backgroundColor: [palette.darkBlue, palette.mediumBlue, palette.red, '#ff8080', '#ffb6b6'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 15, padding: 15 } }, tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                }
+            });
+
+            const spendCtx = document.getElementById('spendChart').getContext('2d');
+            new Chart(spendCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['China', 'UK', 'USA', 'New Zealand', 'India'],
+                    datasets: [{
+                        label: 'Spend (AUD $B)',
+                        data: [9.2, 2.4, 2.3, 2.2, 1.8],
+                        backgroundColor: [palette.darkBlue, palette.mediumBlue, palette.red, '#ff8080', '#ffb6b6'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 15, padding: 15 } }, tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

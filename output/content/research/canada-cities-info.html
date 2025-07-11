@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: Canada's Visitor Economy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues -->
+    <!-- Application Structure Plan: This infographic tells a linear story designed for scrolling. 1) Hook: It opens with big, impactful numbers on revenue and arrivals to establish the scale of Canada's tourism recovery. 2) Core Narrative: It then creates a visual comparison between the "Urban Titans" (driven by economic volume) and the "Connoisseur's Choices" (driven by qualitative awards), using a two-column grid. 3) Deeper Analysis: The next sections dive into key strategic insights from the report—the different spending habits of domestic vs. international travelers and the significant rise of non-urban tourism. 4) Actionable Conclusion: The infographic concludes with tailored recommendations based on traveler profiles, making the data useful for planning. This narrative structure transforms the dense report into a clear, engaging, and memorable visual journey. -->
+    <!-- Visualization & Content Choices: 
+    - Recovery Metrics: Report Info -> Arrival & Revenue data 2019-2024. Goal -> Change. Viz -> Dual-Axis Line & Bar Chart. Justification -> Best way to show the relationship and divergence between two different metrics (volume vs. value) over time. Library -> Chart.js (Canvas).
+    - Urban Titans: Report Info -> Toronto/Vancouver dominate spending. Goal -> Compare/Inform. Viz -> Icon-driven Stat Cards. Justification -> Quickly conveys the economic power of these hubs without a complex chart. Method -> HTML/Tailwind.
+    - Connoisseur's Choices: Report Info -> Quebec City & Victoria's consistent awards. Goal -> Inform/Compare. Viz -> Award-style Cards. Justification -> Highlights qualitative success in a visually appealing way. Method -> HTML/Tailwind.
+    - Visitor Spending: Report Info -> Domestic vs. International spending breakdown. Goal -> Compare Composition. Viz -> Two side-by-side Donut Charts. Justification -> Excellent for showing and comparing the parts of a whole for two distinct groups. Library -> Chart.js (Canvas).
+    - Rise of Non-Urban: Report Info -> 95% of new Airbnb towns are non-urban. Goal -> Inform. Viz -> Pictograph-style Big Number. Justification -> Creates high visual impact for a single, powerful statistic. Method -> HTML/Tailwind + Unicode.
+    - Traveler Profiles: Report Info -> Key traveler motivations. Goal -> Organize/Guide. Viz -> Icon-driven recommendation cards. Justification -> Clear, scannable, and provides actionable advice. Method -> HTML/Tailwind + Unicode.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F0F3F4; }
+        .chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 400px; max-height: 450px; }
+        .donut-chart-container { position: relative; width: 100%; max-width: 280px; margin-left: auto; margin-right: auto; height: 280px; max-height: 280px; }
+        .section-title { font-size: 2.25rem; font-weight: 900; line-height: 1.2; color: #1D2731; }
+        .kicker { font-weight: 700; color: #0B3C5D; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-card { background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); padding: 2rem; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white shadow-md py-6">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 leading-tight">CANADA'S VISITOR ECONOMY</h1>
+            <p class="text-xl text-gray-600 mt-2">A Visual Analysis of Tourism Trends & Destinations</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-16">
+
+        <section id="recovery" class="mb-16">
+            <div class="text-center">
+                <p class="kicker mb-2">A FORMIDABLE RECOVERY</p>
+                <h2 class="section-title mb-4">Tourism Rebounds Beyond Pre-Pandemic Levels</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-8">Canada's tourism sector has not only recovered but is evolving. While visitor volume is steadily climbing back, tourism revenue has soared to new heights, indicating a shift towards higher-value travel experiences.</p>
+            </div>
+            <div class="stat-card">
+                <div class="chart-container">
+                    <canvas id="recoveryChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <section id="dichotomy" class="mb-16">
+            <div class="text-center mb-12">
+                <p class="kicker mb-2">TWO STORIES OF SUCCESS</p>
+                <h2 class="section-title mb-4">Titans of Volume vs. Connoisseurs of Charm</h2>
+                 <p class="max-w-3xl mx-auto text-lg text-gray-600">The data reveals two types of leading destinations: powerhouse metropolises that drive the economy through sheer volume, and smaller, character-rich cities that win hearts and awards through exceptional visitor satisfaction.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="stat-card text-center">
+                    <h3 class="text-3xl font-bold text-[#0B3C5D] mb-4">The Urban Titans</h3>
+                    <p class="text-gray-600 mb-6">Toronto, Vancouver, and Montreal are the economic engines, capturing over 52% of all international visitor spending.</p>
+                    <div class="flex justify-around items-center">
+                        <div class="text-center">
+                             <div class="text-5xl font-black text-[#328CC1]">#1</div>
+                             <div class="font-semibold mt-1">Toronto</div>
+                        </div>
+                        <div class="text-center">
+                             <div class="text-5xl font-black text-[#328CC1]">#2</div>
+                             <div class="font-semibold mt-1">Vancouver</div>
+                        </div>
+                    </div>
+                     <p class="text-sm text-gray-500 mt-6">Ranked by tourism revenue and visitor numbers.</p>
+                </div>
+                <div class="stat-card text-center">
+                    <h3 class="text-3xl font-bold text-[#D9B310] mb-4">The Connoisseur's Choices</h3>
+                    <p class="text-gray-600 mb-6">Quebec City and Victoria consistently top "Best Of" lists, praised for atmosphere, friendliness, and charm.</p>
+                    <div class="space-y-3">
+                        <p class="font-semibold text-lg">🏆 Quebec City: #1 City in Canada <span class="font-normal text-sm">(10 years, T+L)</span></p>
+                        <p class="font-semibold text-lg">🏆 Victoria: #1 Friendliest City <span class="font-normal text-sm">(CNT)</span></p>
+                    </div>
+                     <p class="text-sm text-gray-500 mt-6">Ranked by major international travel awards.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="spending" class="mb-16">
+            <div class="text-center mb-12">
+                <p class="kicker mb-2">THE TRAVELER'S WALLET</p>
+                <h2 class="section-title mb-4">Different Priorities, Different Spending</h2>
+                <p class="max-w-3xl mx-auto text-lg text-gray-600">Spending habits reveal a key insight: international visitors prioritize accommodation, while domestic travelers spend the most on food and beverages, signaling a strong market for culinary-focused trips within Canada.</p>
+            </div>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 stat-card">
+                <div>
+                    <h3 class="text-xl font-bold text-center mb-4">International Visitor Spending</h3>
+                    <div class="donut-chart-container">
+                        <canvas id="internationalSpendChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-center mb-4">Domestic Visitor Spending</h3>
+                    <div class="donut-chart-container">
+                        <canvas id="domesticSpendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="emerging" class="mb-16">
+            <div class="text-center">
+                <p class="kicker mb-2">THE NEW FRONTIER</p>
+                <h2 class="section-title mb-4">The Rise of Off-the-Beaten-Path Travel</h2>
+                 <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-8">A massive trend in domestic travel is the growing appetite for non-urban destinations. This shift presents a major opportunity to diversify Canada's tourism economy beyond the big cities.</p>
+                <div class="stat-card">
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+                        <div class="text-8xl text-[#328CC1]">🏡</div>
+                        <div>
+                            <div class="text-7xl md:text-8xl font-black text-[#0B3C5D]">95%</div>
+                            <p class="text-xl font-bold text-gray-700 mt-2">of new towns that welcomed their first Airbnb guests in 2023 were in non-urban areas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="profiles">
+            <div class="text-center mb-12">
+                 <p class="kicker mb-2">TAILORED RECOMMENDATIONS</p>
+                 <h2 class="section-title mb-4">Find Your Perfect Canada</h2>
+                 <p class="max-w-3xl mx-auto text-lg text-gray-600">Canada's diverse landscape appeals to every travel style. Here are top destinations matched to different traveler motivations.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="stat-card text-center">
+                    <div class="text-5xl mb-3">🏙️</div>
+                    <h4 class="text-xl font-bold mb-2">The Urban Explorer</h4>
+                    <p class="text-gray-600"><strong>Top Picks:</strong> Toronto, Montreal</p>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="text-5xl mb-3">🏛️</div>
+                    <h4 class="text-xl font-bold mb-2">The History & Culture Seeker</h4>
+                    <p class="text-gray-600"><strong>Top Picks:</strong> Quebec City, Victoria</p>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="text-5xl mb-3">🏞️</div>
+                    <h4 class="text-xl font-bold mb-2">The Adventure & Nature Enthusiast</h4>
+                    <p class="text-gray-600"><strong>Top Picks:</strong> Vancouver, Calgary</p>
+                </div>
+                <div class="stat-card text-center">
+                    <div class="text-5xl mb-3">💰</div>
+                    <h4 class="text-xl font-bold mb-2">The Domestic Value Seeker</h4>
+                    <p class="text-gray-600"><strong>Top Picks:</strong> Winnipeg, Saskatoon, Gatineau</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-[#1D2731] text-white mt-16">
+        <div class="container mx-auto px-6 py-4 text-center text-sm">
+            <p>Data synthesized from "Canada's Tourism Sector: A Comprehensive Analysis" report.</p>
+            <p>All figures in Canadian Dollars unless otherwise noted.</p>
+        </div>
+    </footer>
+
+    <script>
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const palette = {
+            darkBlue: '#0B3C5D',
+            mediumBlue: '#328CC1',
+            gold: '#D9B310',
+            lightGray: '#F0F3F4',
+            nearBlack: '#1D2731'
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const recoveryCtx = document.getElementById('recoveryChart').getContext('2d');
+            new Chart(recoveryCtx, {
+                data: {
+                    labels: ['2019', '2020', '2021', '2022', '2023', '2024 (proj)'],
+                    datasets: [{
+                        type: 'bar',
+                        label: 'Total Tourism Revenue ($B CAD)',
+                        data: [29.8, 13.6, 14.4, 24.2, 38.5, 49.4],
+                        backgroundColor: palette.mediumBlue,
+                        yAxisID: 'y1',
+                    }, {
+                        type: 'line',
+                        label: 'Total Int\'l Arrivals (Millions)',
+                        data: [22.1, 3.0, 3.1, 12.8, 18.3, 19.9],
+                        borderColor: palette.darkBlue,
+                        backgroundColor: palette.darkBlue,
+                        tension: 0.3,
+                        yAxisID: 'y',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear', display: true, position: 'left', title: { display: true, text: 'Arrivals (Millions)' }
+                        },
+                        y1: {
+                            type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Revenue ($B CAD)' }
+                        }
+                    },
+                    plugins: { legend: { position: 'top' }, tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                }
+            });
+
+            const internationalSpendCtx = document.getElementById('internationalSpendChart').getContext('2d');
+            new Chart(internationalSpendCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Accommodations', 'Food & Bev', 'Transport', 'Other'],
+                    datasets: [{
+                        data: [36.4, 25, 20, 18.6],
+                        backgroundColor: [palette.darkBlue, palette.mediumBlue, palette.gold, '#a9d6e5'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 15, padding: 10 } }, tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                }
+            });
+
+            const domesticSpendCtx = document.getElementById('domesticSpendChart').getContext('2d');
+            new Chart(domesticSpendCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Food & Bev', 'Transport', 'Accommodations', 'Other'],
+                    datasets: [{
+                        data: [30.8, 28, 22, 19.2],
+                        backgroundColor: [palette.darkBlue, palette.mediumBlue, palette.gold, '#a9d6e5'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 15, padding: 10 } }, tooltip: { callbacks: { title: tooltipTitleCallback } } }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

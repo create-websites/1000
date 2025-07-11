@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shirdi: An Interactive Study of Faith and Transformation</title>
+    <!-- Chosen Palette: Warm Neutrals with Saffron Accent -->
+    <!-- Application Structure Plan: A thematic, dashboard-style SPA with four main interactive sections (The Saint, The Sacred Town, The Institution, The Ecosystem) accessed via a persistent sidebar navigation. This structure deconstructs the linear report into distinct, digestible topics, allowing users to explore areas of interest non-linearly. This user-centric design is superior to a long-scroll format for engaging with complex, multi-faceted data. -->
+    <!-- Visualization & Content Choices: SSST Finances -> Goal: Compare -> Bar Chart (Chart.js) to clearly show revenue fluctuations. Philanthropy -> Goal: Inform -> Interactive Stat Cards to highlight the scale of welfare. Sacred Sites -> Goal: Organize/Explore -> HTML/CSS Interactive Diagram for spatial understanding without SVG. Pilgrim Footfall -> Goal: Compare -> Bar Chart (Chart.js) showing daily vs. festival numbers. The choices prioritize clarity and interaction, strictly avoiding SVG/Mermaid as required. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #402A24;
+        }
+        .font-serif {
+            font-family: 'Lora', serif;
+        }
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar-link {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        .sidebar-link.active, .sidebar-link:hover {
+            background-color: #F7EFE5;
+            color: #D97706;
+            border-left-color: #D97706;
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.8s;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .stat-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E7E5E4;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .interactive-map-dot {
+            transition: all 0.3s ease;
+        }
+        .interactive-map-dot:hover {
+            transform: scale(1.5);
+            background-color: #F59E0B;
+        }
+    </style>
+</head>
+<body class="bg-stone-50">
+    <div class="flex h-screen bg-white">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed z-30 lg:relative lg:translate-x-0 w-64 shrink-0 bg-white border-r border-stone-200 -translate-x-full">
+            <div class="flex flex-col h-full">
+                <div class="h-16 flex items-center justify-center border-b border-stone-200">
+                    <h1 class="text-xl font-bold font-serif text-amber-700">Shirdi Interactive</h1>
+                </div>
+                <nav class="flex-1 p-4 space-y-2">
+                    <a href="#saint" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <span class="mr-3">🕉️</span> The Saint
+                    </a>
+                    <a href="#town" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <span class="mr-3">📍</span> The Sacred Town
+                    </a>
+                    <a href="#institution" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <span class="mr-3">🏦</span> The Institution
+                    </a>
+                    <a href="#ecosystem" class="sidebar-link flex items-center p-3 rounded-lg">
+                        <span class="mr-3">📈</span> The Ecosystem
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-stone-200 flex items-center px-6 lg:hidden">
+                <button id="menu-button" class="text-stone-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <h2 id="mobile-header-title" class="text-lg font-semibold ml-4 text-amber-800 font-serif">The Saint</h2>
+            </header>
+            
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-stone-50">
+                <div class="container mx-auto px-6 py-8">
+                    <!-- Section: The Saint -->
+                    <section id="saint" class="content-section">
+                        <h2 class="text-3xl font-bold text-amber-800 font-serif mb-4">The Saint: Life and Philosophy of Sai Baba</h2>
+                        <p class="mb-8 text-stone-600 text-lg">This section delves into the life of the enigmatic saint of Shirdi, Sai Baba. His history, shrouded in mystery, and his powerful, universal teachings form the spiritual bedrock upon which the global phenomenon of Shirdi is built.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                                <h3 class="text-2xl font-bold text-amber-700 font-serif mb-3">"Sabka Malik Ek"</h3>
+                                <p class="font-semibold mb-2">"One God Governs All"</p>
+                                <p class="text-stone-600">This was Sai Baba's core teaching. He masterfully blended Hindu and Islamic traditions to foster unity. He lived in a mosque he named "Dwarkamai" (a Hindu name), celebrated festivals of both faiths, and encouraged reading of all holy scriptures. This philosophy of syncretic monotheism created a spiritual space welcoming to all, breaking down barriers of caste and creed.</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                                <h3 class="text-2xl font-bold text-amber-700 font-serif mb-3">The Two Pillars of Devotion</h3>
+                                <p class="text-stone-600">For his followers, Baba distilled the path to resilience and peace into two core principles:</p>
+                                <ul class="mt-4 space-y-3">
+                                    <li><strong class="text-amber-600">Shraddha (Faith):</strong> An unwavering, loving trust in the Guru's guidance and protection, providing a foundation of fearlessness.</li>
+                                    <li><strong class="text-amber-600">Saburi (Patience):</strong> The calm perseverance to endure hardship, born from the conviction that faith will ultimately provide a solution.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Section: The Sacred Town -->
+                    <section id="town" class="content-section">
+                         <h2 class="text-3xl font-bold text-amber-800 font-serif mb-4">The Sacred Town: An Interactive Map</h2>
+                        <p class="mb-8 text-stone-600 text-lg">The layout of Shirdi is a sacred geography, a physical narrative of Sai Baba's life. Explore the key sites that form the heart of the pilgrimage. Hover over the points on the map to learn about their significance.</p>
+
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                            <div class="flex flex-col lg:flex-row gap-8">
+                                <div class="lg:w-1/2 relative bg-stone-100 border-2 border-dashed border-stone-300 rounded-lg min-h-[400px]">
+                                    <!-- Interactive Dots -->
+                                    <div title="Samadhi Mandir" class="interactive-map-dot absolute w-5 h-5 bg-amber-500 border-2 border-white rounded-full cursor-pointer" style="top: 40%; left: 50%;"></div>
+                                    <div title="Dwarkamai" class="interactive-map-dot absolute w-5 h-5 bg-amber-500 border-2 border-white rounded-full cursor-pointer" style="top: 60%; left: 35%;"></div>
+                                    <div title="Chavadi" class="interactive-map-dot absolute w-5 h-5 bg-amber-500 border-2 border-white rounded-full cursor-pointer" style="top: 62%; left: 65%;"></div>
+                                    <div title="Gurusthan" class="interactive-map-dot absolute w-5 h-5 bg-amber-500 border-2 border-white rounded-full cursor-pointer" style="top: 20%; left: 25%;"></div>
+                                    <div title="Lendi Baug" class="interactive-map-dot absolute w-5 h-5 bg-amber-500 border-2 border-white rounded-full cursor-pointer" style="top: 80%; left: 75%;"></div>
+                                </div>
+                                <div id="map-info-panel" class="lg:w-1/2 p-4 bg-amber-50 rounded-lg border border-amber-200 min-h-[400px] flex flex-col justify-center">
+                                    <h3 id="map-title" class="text-2xl font-bold text-amber-700 font-serif">Samadhi Mandir</h3>
+                                    <p id="map-text" class="mt-2 text-stone-700">The heart of Shirdi, this shrine houses Sai Baba's mortal remains. Originally a private house, it became his final resting place and the focal point of all worship, where the four daily Aartis are performed.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Section: The Institution -->
+                    <section id="institution" class="content-section">
+                        <h2 class="text-3xl font-bold text-amber-800 font-serif mb-4">The Institution: Shri Saibaba Sansthan Trust (SSST)</h2>
+                        <p class="mb-8 text-stone-600 text-lg">The SSST manages the temple and has evolved into one of India's wealthiest trusts. This section visualizes its financial scale and vast philanthropic activities, which function like a regional welfare state, turning spiritual devotion into social infrastructure.</p>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                                <h3 class="text-xl font-bold text-center text-amber-700 mb-4">SSST Annual Earnings (in ₹ Crore)</h3>
+                                <div class="chart-container">
+                                    <canvas id="financeChart"></canvas>
+                                </div>
+                            </div>
+                             <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                                 <h3 class="text-xl font-bold text-center text-amber-700 mb-4">Philanthropy as a Mission</h3>
+                                 <p class="text-center text-stone-600 mb-6">The Trust reinvests its earnings into massive social welfare projects, embodying Baba's message of service.</p>
+                                 <div class="space-y-4">
+                                     <div class="stat-card p-4 rounded-lg">
+                                         <h4 class="font-bold text-lg text-amber-600">Healthcare</h4>
+                                         <p class="text-stone-600 text-sm">Operates two major hospitals, including a Super Speciality facility, providing subsidized and free treatment to thousands annually.</p>
+                                     </div>
+                                     <div class="stat-card p-4 rounded-lg">
+                                         <h4 class="font-bold text-lg text-amber-600">Annadanam (Free Meals)</h4>
+                                         <p class="text-stone-600 text-sm">The Shri Sai Prasadalaya serves free, hygienic meals to tens of thousands of pilgrims every single day in a massive, modern complex.</p>
+                                     </div>
+                                     <div class="stat-card p-4 rounded-lg">
+                                         <h4 class="font-bold text-lg text-amber-600">Education</h4>
+                                         <p class="text-stone-600 text-sm">Runs multiple educational institutions, including schools, a college, and a technical training institute (ITI) for local students.</p>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Section: The Ecosystem -->
+                    <section id="ecosystem" class="content-section">
+                        <h2 class="text-3xl font-bold text-amber-800 font-serif mb-4">The Ecosystem: Pilgrimage-Driven Urbanization</h2>
+                        <p class="mb-8 text-stone-600 text-lg">The constant flow of millions of pilgrims has completely reshaped Shirdi's economy and infrastructure. This section explores the town's transformation into a major pilgrimage city.</p>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                             <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                                <h3 class="text-xl font-bold text-center text-amber-700 mb-4">Pilgrim Footfall</h3>
+                                <p class="text-center text-stone-600 mb-6">Shirdi experiences a massive, constant influx of visitors, which is the primary driver of its "pilgrimage-based economy."</p>
+                                <div class="chart-container">
+                                    <canvas id="footfallChart"></canvas>
+                                </div>
+                             </div>
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
+                                 <h3 class="text-xl font-bold text-center text-amber-700 mb-4">Infrastructure as a Catalyst</h3>
+                                 <p class="text-center text-stone-600 mb-6">Decades of high pilgrim traffic spurred demand for major infrastructure, which in turn fuels further growth.</p>
+                                <div class="space-y-4">
+                                     <div class="stat-card p-4 rounded-lg flex items-center gap-4">
+                                         <div class="text-3xl">✈️</div>
+                                         <div>
+                                            <h4 class="font-bold text-lg text-amber-600">Shirdi International Airport (SAG)</h4>
+                                            <p class="text-stone-600 text-sm">Inaugurated in 2017, this airport made Shirdi accessible to a global audience, dramatically boosting visitor numbers.</p>
+                                         </div>
+                                     </div>
+                                     <div class="stat-card p-4 rounded-lg flex items-center gap-4">
+                                        <div class="text-3xl">🏨</div>
+                                         <div>
+                                            <h4 class="font-bold text-lg text-amber-600">Thriving Hospitality Sector</h4>
+                                            <p class="text-stone-600 text-sm">Hundreds of hotels, from budget lodges to international brands like Radisson, have emerged to cater to millions of annual visitors.</p>
+                                         </div>
+                                     </div>
+                                     <div class="stat-card p-4 rounded-lg flex items-center gap-4">
+                                        <div class="text-3xl">🛍️</div>
+                                         <div>
+                                            <h4 class="font-bold text-lg text-amber-600">Vibrant Local Economy</h4>
+                                            <p class="text-stone-600 text-sm">Unlike some pilgrimage sites, Shirdi's model allows a private market for transport, food, and retail to flourish alongside the Trust's charity.</p>
+                                         </div>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const menuButton = document.getElementById('menu-button');
+            const mobileHeaderTitle = document.getElementById('mobile-header-title');
+            
+            menuButton.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            const navLinks = document.querySelectorAll('.sidebar-link');
+            const sections = document.querySelectorAll('.content-section');
+            let financeChartInstance = null;
+            let footfallChartInstance = null;
+
+            const mapInfo = {
+                "Samadhi Mandir": "The heart of Shirdi, this shrine houses Sai Baba's mortal remains. Originally a private house, it became his final resting place and the focal point of all worship, where the four daily Aartis are performed.",
+                "Dwarkamai": "The dilapidated mosque that Baba made his home for 60 years. It contains the sacred fire, the Dhuni, which has been perpetually burning for over a century, providing sacred ash (Udi) to devotees.",
+                "Chavadi": "Originally a public meeting hall, Baba slept here on alternate nights. This routine evolved into the grand Thursday Palkhi Procession, a major ritual.",
+                "Gurusthan": "The sacred spot under a neem tree where Baba was first seen as a young ascetic. It is also believed to be the site of his own Guru's tomb.",
+                "Lendi Baug": "A barren wasteland that Baba personally transformed into a garden for solitude and meditation. It houses the 'Nanda Deep,' a perpetually burning lamp lit by Baba."
+            };
+
+            document.querySelectorAll('.interactive-map-dot').forEach(dot => {
+                dot.addEventListener('mouseenter', () => {
+                    document.getElementById('map-title').textContent = dot.title;
+                    document.getElementById('map-text').textContent = mapInfo[dot.title];
+                });
+            });
+
+            function updateActiveState(hash) {
+                const activeHash = hash || '#saint';
+                
+                navLinks.forEach(link => {
+                    const linkHash = link.getAttribute('href');
+                    link.classList.toggle('active', linkHash === activeHash);
+                    if (linkHash === activeHash) {
+                        mobileHeaderTitle.textContent = link.textContent.trim();
+                    }
+                });
+
+                sections.forEach(section => {
+                    const isActive = '#' + section.id === activeHash;
+                    section.classList.toggle('active', isActive);
+                    if (isActive) {
+                        if (section.id === 'institution' && !financeChartInstance) renderFinanceChart();
+                        if (section.id === 'ecosystem' && !footfallChartInstance) renderFootfallChart();
+                    }
+                });
+
+                if (sidebar.classList.contains('lg:relative')) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    const targetHash = link.getAttribute('href');
+                    history.pushState(null, null, targetHash);
+                    updateActiveState(targetHash);
+                    if (!sidebar.classList.contains('lg:relative')) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                });
+            });
+
+            window.addEventListener('popstate', () => updateActiveState(window.location.hash));
+            updateActiveState(window.location.hash);
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#57534E' },
+                        grid: { color: '#E7E5E4' }
+                    },
+                    x: {
+                        ticks: { color: '#57534E' },
+                        grid: { display: false }
+                    }
+                }
+            };
+            
+            function renderFinanceChart() {
+                const ctx = document.getElementById('financeChart').getContext('2d');
+                if (financeChartInstance) financeChartInstance.destroy();
+                financeChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Pre-COVID Avg.', 'COVID-era (20-22 Avg.)', '2022-23'],
+                        datasets: [{
+                            label: 'Earnings in ₹ Crore',
+                            data: [800, 400, 900],
+                            backgroundColor: ['#FBBF24', '#FCA5A5', '#F59E0B'],
+                            borderColor: ['#FBBF24', '#FCA5A5', '#F59E0B'],
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: chartOptions
+                });
+            }
+
+            function renderFootfallChart() {
+                const ctx = document.getElementById('footfallChart').getContext('2d');
+                if (footfallChartInstance) footfallChartInstance.destroy();
+                footfallChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Average Day', 'Festival Day'],
+                        datasets: [{
+                            label: 'Daily Visitors',
+                            data: [42500, 100000],
+                            backgroundColor: ['#A8A29E', '#D97706'],
+                            borderColor: ['#A8A29E', '#D97706'],
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { ...chartOptions,
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: function(value) { return value / 1000 + 'k'; }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: A Strategic Guide to Urban Tourism in the USA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: The infographic follows a clear narrative flow designed for easy scrolling and comprehension. It begins with a high-impact "Hook" (total visitors) to grab attention. The core story is presented in a "Titans vs. Connoisseurs" section, using a two-column grid to visually contrast quantitative popularity with qualitative acclaim. This is followed by sequential, thematic sections that answer key traveler questions: "How much will it cost?" (Comparative Costs), "When should I go?" (Seasonal Strategy), and "What city is right for me?" (Traveler Profiles). This structure breaks down the complex report into a logical, easy-to-digest visual story. -->
+    <!-- Visualization & Content Choices:
+    - Total Visitors: Report Info -> 72.4M international visitors. Goal -> Inform/Hook. Viz -> Single Big Number. Justification -> High-impact, immediate context. Method -> HTML/Tailwind.
+    - Visitor Arrivals: Report Info -> Top 10 cities by int'l arrivals. Goal -> Compare/Rank. Viz -> Horizontal Bar Chart. Justification -> Ideal for ranking categories. Library -> Chart.js (Canvas).
+    - T+L Award Criteria: Report Info -> Criteria for "Best City" awards. Goal -> Inform/Composition. Viz -> Donut Chart. Justification -> Shows parts of a whole (what defines a great experience). Library -> Chart.js (Canvas).
+    - Acclaimed Cities: Report Info -> Santa Fe, Chicago, Seattle wins. Goal -> Inform/Highlight. Viz -> Styled Award Cards. Justification -> Visually engaging for qualitative praise. Method -> HTML/Tailwind.
+    - Daily Costs: Report Info -> Comparative daily budgets. Goal -> Compare/Composition. Viz -> Stacked Bar Chart. Justification -> Shows total cost and its breakdown simultaneously. Library -> Chart.js (Canvas).
+    - Seasonal Strategy: Report Info -> Regional seasonal patterns. Goal -> Organize/Change. Viz -> Custom HTML/CSS Flow Diagram. Justification -> More engaging than a table, shows process/flow through the year. Method -> HTML/Tailwind.
+    - Traveler Personas: Report Info -> Recommendations for traveler types. Goal -> Organize/Inform. Viz -> Icon-driven cards. Justification -> Clear, scannable, user-friendly. Method -> HTML/Tailwind + Unicode.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F7F7F7; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 400px; max-height: 400px; }
+        .donut-chart-container { position: relative; width: 100%; max-width: 300px; margin-left: auto; margin-right: auto; height: 300px; max-height: 300px; }
+        .cost-chart-container { position: relative; width: 100%; max-width: 700px; margin-left: auto; margin-right: auto; height: 400px; max-height: 400px; }
+        .section-title { font-size: 2.25rem; font-weight: 900; line-height: 1.2; color: #1F2937; }
+        .kicker { font-weight: 700; color: #4D96FF; text-transform: uppercase; letter-spacing: 0.05em; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white shadow-md py-6">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 leading-tight">THE AMERICAN METROPOLIS</h1>
+            <p class="text-xl text-gray-600 mt-2">A Strategic Visual Guide to Urban Tourism in the USA</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-16">
+
+        <section id="hook" class="text-center mb-16">
+            <p class="kicker mb-2">A GLOBAL DESTINATION</p>
+            <h2 class="section-title mb-4">The U.S. Attracted</h2>
+            <div class="text-8xl md:text-9xl font-black text-[#FF6B6B]">72.4M</div>
+            <p class="text-2xl font-bold text-gray-700 mt-2">International Visitors in 2024</p>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mt-4">This influx of travelers highlights a vast and complex tourism landscape. But where do they go, and which cities do they love the most? This infographic dissects the data to reveal two distinct stories of American travel.</p>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+            <section id="titans" class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="kicker">BY THE NUMBERS</p>
+                <h3 class="section-title mb-4">The Titans of Tourism</h3>
+                <p class="text-gray-600 mb-6">These "gateway" cities command the lion's share of international arrivals, driven by massive airports and globally recognized landmarks. This chart ranks the top destinations by the sheer volume of visitors.</p>
+                <div class="chart-container">
+                    <canvas id="visitorChart"></canvas>
+                </div>
+            </section>
+
+            <section id="connoisseurs" class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <p class="kicker">BY ACCLAIM</p>
+                <h3 class="section-title mb-4">The Connoisseur's Choice</h3>
+                <p class="text-gray-600 mb-6">Prestigious travel awards reveal a different kind of winner—cities celebrated not just for size, but for the quality of the overall visitor experience. This is what seasoned travelers value most.</p>
+                <div class="donut-chart-container mb-6">
+                    <canvas id="experienceDonut"></canvas>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-[#FFF8E1] border-l-4 border-[#FFD93D] p-4 rounded-r-lg">
+                        <h4 class="font-bold text-lg">#1 Best City: Santa Fe, NM</h4>
+                        <p class="text-sm text-gray-700">Praised for its unique culture, art, and cuisine.</p>
+                    </div>
+                    <div class="bg-[#E7F5FF] border-l-4 border-[#4D96FF] p-4 rounded-r-lg">
+                        <h4 class="font-bold text-lg">8x Best Big City: Chicago, IL</h4>
+                        <p class="text-sm text-gray-700">Recognized for its world-class offerings in a welcoming environment.</p>
+                    </div>
+                    <div class="bg-[#EBF9F1] border-l-4 border-[#6BCB77] p-4 rounded-r-lg">
+                        <h4 class="font-bold text-lg">Most Beautiful City: Seattle, WA</h4>
+                        <p class="text-sm text-gray-700">Celebrated for its stunning blend of urban life and nature.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section id="cost" class="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-16">
+            <div class="text-center">
+                <p class="kicker">BUDGETING YOUR ITINERARY</p>
+                <h3 class="section-title mb-4">The True Cost of Travel</h3>
+                <p class="max-w-3xl mx-auto text-gray-600 mb-8">A city's affordability is more than just its hotel prices. This analysis breaks down the estimated daily cost for a mid-range traveler, revealing how high-priced attractions can drastically alter a city's value proposition.</p>
+            </div>
+            <div class="cost-chart-container">
+                <canvas id="costChart"></canvas>
+            </div>
+        </section>
+
+        <section id="seasons" class="text-center mb-16">
+            <p class="kicker">PLANNING YOUR VISIT</p>
+            <h3 class="section-title mb-4">Timing is Everything</h3>
+            <p class="max-w-3xl mx-auto text-gray-600 mb-10">The "best" time to visit the U.S. varies dramatically by region. A strategic traveler can chase the "shoulder season"—the sweet spot of good weather and fewer crowds—across the country year-round.</p>
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-0">
+                <div class="text-center p-4">
+                    <div class="text-3xl font-bold text-[#4D96FF]">SPRING</div>
+                    <div class="text-lg font-semibold mt-1">Northeast</div>
+                    <p class="text-sm text-gray-600">Mild weather, blooming parks.</p>
+                </div>
+                <div class="text-2xl text-gray-300 font-light mx-2 hidden md:block">➔</div>
+                 <div class="text-2xl text-gray-300 font-light md:hidden">↓</div>
+                <div class="text-center p-4">
+                    <div class="text-3xl font-bold text-[#FF6B6B]">SUMMER</div>
+                    <div class="text-lg font-semibold mt-1">West Coast / Midwest</div>
+                    <p class="text-sm text-gray-600">Sunny, dry weather, city festivals.</p>
+                </div>
+                <div class="text-2xl text-gray-300 font-light mx-2 hidden md:block">➔</div>
+                 <div class="text-2xl text-gray-300 font-light md:hidden">↓</div>
+                <div class="text-center p-4">
+                    <div class="text-3xl font-bold text-[#FFD93D]">FALL</div>
+                    <div class="text-lg font-semibold mt-1">Southwest / Southeast</div>
+                    <p class="text-sm text-gray-600">Cooler temps, major events.</p>
+                </div>
+                <div class="text-2xl text-gray-300 font-light mx-2 hidden md:block">➔</div>
+                 <div class="text-2xl text-gray-300 font-light md:hidden">↓</div>
+                <div class="text-center p-4">
+                    <div class="text-3xl font-bold text-[#6BCB77]">WINTER</div>
+                    <div class="text-lg font-semibold mt-1">Northeast / Southwest</div>
+                    <p class="text-sm text-gray-600">Lowest prices, indoor culture or skiing.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="profiles" class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+            <div class="text-center">
+                <p class="kicker">TAILORED RECOMMENDATIONS</p>
+                <h3 class="section-title mb-6">Find Your Perfect City Match</h3>
+                <p class="max-w-3xl mx-auto text-gray-600 mb-10">The ideal U.S. city depends on your travel style. Here are top recommendations based on different traveler priorities.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="text-5xl mb-3">🍲</div>
+                    <h4 class="text-xl font-bold mb-2">The Food-Focused Traveler</h4>
+                    <p class="text-gray-600"><strong>Top Picks:</strong> New Orleans, New York City, Santa Fe</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl mb-3">🏛️</div>
+                    <h4 class="text-xl font-bold mb-2">The Cultural Explorer</h4>
+                    <p class="text-gray-600"><strong>Top Picks:</strong> Santa Fe, New Orleans, Charleston</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl mb-3">🏞️</div>
+                    <h4 class="text-xl font-bold mb-2">The Urban Adventurer</h4>
+                    <p class="text-gray-600"><strong>Top Picks:</strong> Seattle, Taos, Orlando (for Eco-Tours)</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-5xl mb-3">👨‍👩‍👧‍👦</div>
+                    <h4 class="text-xl font-bold mb-2">The Budget-Conscious Family</h4>
+                    <p class="text-gray-600"><strong>Top Picks:</strong> St. Augustine, Milwaukee</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-4 text-center text-sm">
+            <p>Data synthesized from "The American Metropolis: A Strategic Guide to Urban Tourism in the USA."</p>
+            <p>All visitor statistics are based on international arrivals for 2023-2024.</p>
+        </div>
+    </footer>
+
+    <script>
+        const wrapLabel = (label) => {
+            if (label.length > 16) {
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > 16) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                });
+                lines.push(currentLine.trim());
+                return lines;
+            }
+            return label;
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+        
+        const palette = {
+            red: '#FF6B6B',
+            yellow: '#FFD93D',
+            green: '#6BCB77',
+            blue: '#4D96FF',
+            darkText: '#333333',
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const visitorCtx = document.getElementById('visitorChart').getContext('2d');
+            new Chart(visitorCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['New York City, NY', 'Miami, FL', 'Los Angeles, CA', 'Orlando, FL', 'San Francisco, CA', 'Las Vegas, NV', 'Washington D.C.', 'Chicago, IL', 'Honolulu, HI', 'Boston, MA'].reverse(),
+                    datasets: [{
+                        label: 'International Visitor Arrivals',
+                        data: [8890000, 4365000, 3603000, 3518000, 2281000, 2077000, 1611000, 1413000, 1322000, 1152000].reverse(),
+                        backgroundColor: palette.blue,
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { beginAtZero: true, ticks: { callback: (value) => value / 1e6 + 'M' } },
+                        y: { ticks: { font: { size: 11 } } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { title: tooltipTitleCallback, label: (context) => ` ${context.raw.toLocaleString()} Visitors` } }
+                    }
+                }
+            });
+
+            const experienceCtx = document.getElementById('experienceDonut').getContext('2d');
+            new Chart(experienceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Culture', 'Food', 'Friendliness', 'Sights', 'Value'],
+                    datasets: [{
+                        label: 'Experience Score',
+                        data: [22, 21, 20, 19, 18],
+                        backgroundColor: [palette.blue, palette.green, palette.yellow, palette.red, '#A5B4FC'],
+                        borderColor: '#F7F7F7',
+                        borderWidth: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 15, padding: 15 } },
+                        tooltip: { callbacks: { title: tooltipTitleCallback } },
+                        title: { display: true, text: 'What Defines a "Best City" Experience?', font: { weight: 'bold' } }
+                    }
+                }
+            });
+
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            new Chart(costCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['New Orleans', 'Santa Fe', 'New York City', 'Seattle', 'Orlando'],
+                    datasets: [
+                        { label: 'Lodging', data: [150, 175, 225, 221, 120], backgroundColor: palette.red },
+                        { label: 'Food/Transport', data: [48, 55, 71, 60.5, 70], backgroundColor: palette.blue },
+                        { label: 'Attractions', data: [30, 25, 40, 38, 150], backgroundColor: palette.yellow }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, ticks: { callback: (value) => '$' + value } }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { 
+                            callbacks: { 
+                                title: tooltipTitleCallback,
+                                footer: (tooltipItems) => {
+                                    let total = tooltipItems.reduce((sum, item) => sum + item.raw, 0);
+                                    return 'Total Daily Est: $' + total.toFixed(2);
+                                }
+                            }
+                        },
+                        title: { display: true, text: 'Estimated Daily Cost Per Person (Mid-Range)', font: { weight: 'bold', size: 14 } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

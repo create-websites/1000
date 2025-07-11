@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canada: An Interactive Tourism Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Forest Green -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive discovery guide. It starts with a high-level "National Snapshot" to provide context on Canada's tourism recovery using dynamic charts. The core of the app is the "Explore Destinations" section, a filterable grid of city/region cards. Clicking a card dynamically loads a detailed profile into a dedicated space, using a tabbed interface (Identity, Attractions, Culinary, Logistics) to manage information density. This avoids a long, linear scroll and allows users to directly compare cities. The structure then flows into "Trip Planning Tools" (Comparative Costs, Seasonal Guide) and finally "Traveler Profiles" for personalized advice. This task-oriented design is more usable than the report's linear format, enabling users to explore based on their specific interests—be it a particular city, budget, or travel style. -->
+    <!-- Visualization & Content Choices: 
+    - Tourism Recovery: Report Info -> Arrival & Revenue data 2019-2024. Goal -> Show Change. Viz -> Dual-axis Line & Bar Chart (Chart.js). Interaction -> Hover for details. Justification -> Effectively shows the relationship between two different metrics over time.
+    - Spending Habits: Report Info -> Domestic vs. International spending breakdown. Goal -> Compare Composition. Viz -> Grouped Donut Charts (Chart.js). Interaction -> Hover for percentages. Justification -> Clearly compares the composition of spending for two distinct groups.
+    - City/Region Cards: Report Info -> List of key destinations. Goal -> Organize/Navigate. Viz -> Interactive Cards (HTML/Tailwind). Interaction -> Click to load profile, filter by type. Justification -> Visual, engaging, and intuitive navigation hub.
+    - City Profiles: Report Info -> Detailed city descriptions. Goal -> Inform/Organize. Viz -> Tabbed Content Area (HTML/JS). Interaction -> Click tabs for content sections. Justification -> Best way to present dense, multi-faceted information without overwhelming the user.
+    - Cost Comparison: Report Info -> Daily costs for key cities. Goal -> Compare. Viz -> Bar Chart (Chart.js). Interaction -> Hover for exact costs. Justification -> Simple, direct comparison of a key decision-making factor.
+    - Traveler Personas: Report Info -> Descriptions of traveler types. Goal -> Inform/Guide. Viz -> Icon-based selection (HTML/JS). Interaction -> Click icon to see tailored recommendations. Justification -> User-friendly way to deliver actionable advice. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F9F9F7; color: #374151; }
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 400px; max-height: 50vh; }
+        .donut-chart-container { position: relative; width: 100%; max-width: 300px; margin: auto; height: 300px; max-height: 300px; }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #10B981; border-bottom-color: #10B981; }
+        .city-profile-tab.active { background-color: #047857; color: #ffffff; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .filter-btn.active { background-color: #10B981; color: white; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-[#F9F9F7]/90 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-emerald-700">Explore Canada</h1>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#snapshot" class="nav-link text-gray-600 hover:text-emerald-600 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Snapshot</a>
+                <a href="#destinations" class="nav-link text-gray-600 hover:text-emerald-600 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Destinations</a>
+                <a href="#planning" class="nav-link text-gray-600 hover:text-emerald-600 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Plan Your Trip</a>
+                <a href="#profiles" class="nav-link text-gray-600 hover:text-emerald-600 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Traveler Profiles</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="intro" class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-800">An Interactive Guide to Canadian Tourism</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                This experience transforms a comprehensive tourism report into a dynamic guide. Discover Canada's top cities and hidden gems, compare travel data, and find destinations perfectly matched to your interests.
+            </p>
+        </section>
+
+        <section id="snapshot" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Canada's Tourism Snapshot</h3>
+                <p class="text-gray-600 max-w-3xl mx-auto">This section provides a high-level overview of Canada's tourism industry, showcasing its strong post-pandemic recovery and the differing spending habits of domestic and international visitors. The charts below illustrate a resilient sector with evolving economic drivers.</p>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-12">
+                <h4 class="text-2xl font-bold text-center mb-6">Post-Pandemic Recovery: Arrivals vs. Revenue</h4>
+                <div class="chart-container">
+                    <canvas id="recoveryChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h4 class="text-2xl font-bold text-center mb-8">Visitor Spending Habits (2023)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h5 class="text-lg font-semibold text-center mb-4">International Visitor Spending</h5>
+                        <div class="donut-chart-container">
+                             <canvas id="internationalSpendChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="text-lg font-semibold text-center mb-4">Domestic Visitor Spending</h5>
+                        <div class="donut-chart-container">
+                             <canvas id="domesticSpendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="destinations" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Explore Destinations</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto">From iconic metropolises to charming small cities and remote natural wonders, Canada's destinations are incredibly diverse. Use the filters to navigate the options and click on any card to dive into a detailed profile.</p>
+                 <div id="filter-container" class="mt-6 inline-flex rounded-md shadow-sm">
+                    <button onclick="filterDestinations('all')" class="filter-btn active px-4 py-2 text-sm font-medium border border-gray-200 rounded-l-lg hover:bg-emerald-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-emerald-500">All</button>
+                    <button onclick="filterDestinations('titan')" class="filter-btn px-4 py-2 text-sm font-medium border-t border-b border-gray-200 hover:bg-emerald-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-emerald-500">Urban Titans</button>
+                    <button onclick="filterDestinations('acclaimed')" class="filter-btn px-4 py-2 text-sm font-medium border-gray-200 hover:bg-emerald-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-emerald-500">Acclaimed Cities</button>
+                    <button onclick="filterDestinations('emerging')" class="filter-btn px-4 py-2 text-sm font-medium border-t border-b border-gray-200 rounded-r-lg hover:bg-emerald-500 hover:text-white focus:z-10 focus:ring-2 focus:ring-emerald-500">Emerging Gems</button>
+                </div>
+            </div>
+            
+            <div id="destination-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+
+            <div id="city-profile-container" class="mt-16 bg-white rounded-xl shadow-lg p-6 md:p-8 hidden fade-in">
+            </div>
+        </section>
+
+        <section id="planning" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Trip Planning Tools</h3>
+                 <p class="text-gray-600 max-w-2xl mx-auto">Informed planning is crucial for a great trip. This section provides tools to compare daily travel costs across major cities and understand the best times to visit different regions to maximize your experience.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <h4 class="text-2xl font-bold text-center mb-6">Comparative Daily Cost</h4>
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-sm text-gray-500">Estimated mid-range budget per person, per day in CAD.</p>
+                </div>
+                 <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                    <h4 class="text-2xl font-bold text-center mb-6">Seasonal Strategy Guide</h4>
+                    <div id="seasonal-grid-container" class="space-y-4"></div>
+                    <p class="text-center mt-4 text-sm text-gray-500">A guide to finding the "shoulder season" sweet spot.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="profiles" class="mb-12">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Find Your Perfect City Match</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto">The ideal Canadian destination depends on your personal travel style. Are you seeking urban energy, historic charm, or a deep connection with nature? Click a profile below for tailored recommendations based on the report's analysis.</p>
+            </div>
+            <div id="persona-container" class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            </div>
+            <div id="persona-details-container" class="mt-8"></div>
+        </section>
+
+    </main>
+    <footer class="bg-gray-800 text-white text-center p-4 mt-12">
+        <p>Data synthesized from "Canada's Tourism Sector: A Comprehensive Analysis" report. App designed for interactive exploration.</p>
+    </footer>
+
+    <script>
+        const appData = {
+            destinations: {
+                toronto: { name: "Toronto, ON", type: "titan", tagline: "The Dynamic Metropolis", content: {
+                    identity: "As Canada's largest city and its financial and cultural epicenter, Toronto stands as the nation's leading tourism destination by nearly every quantitative measure. Its dynamic, multicultural energy, combined with a vast array of world-class attractions, creates a powerful draw for both domestic and international visitors.",
+                    attractions: `
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><b>CN Tower & EdgeWalk:</b> Iconic skyline views and a thrilling hands-free walk 365 meters up.</li>
+                            <li><b>Museums (ROM & AGO):</b> World-class collections of natural history, world cultures, and Canadian art.</li>
+                            <li><b>Distillery District:</b> A preserved Victorian industrial site turned into a pedestrian village of boutiques and galleries.</li>
+                            <li><b>Kensington Market:</b> A bohemian hub with vintage shops, street art, and eclectic food stalls.</li>
+                            <li><b>Toronto Islands:</b> A short ferry ride to beaches, parks, and stunning city views.</li>
+                        </ul>`,
+                    culinary: "A global culinary journey in one city. The signature dish is the <b>Peameal Bacon Sandwich</b> from St. Lawrence Market. The city's true strength lies in its diverse ethnic neighborhoods, offering authentic cuisines from around the world, from Chinese dim sum to Greek souvlaki and Italian pasta.",
+                    logistics: `
+                        <p class="mb-2"><strong class="text-gray-800">Best Time:</strong> Late spring (May) and early fall (Sep-Oct) for pleasant weather and fewer crowds.</p>
+                        <p class="mb-2"><strong class="text-gray-800">Avg. Daily Cost (Mid-Range):</strong> ~$337 CAD</p>
+                        <p><strong class="text-gray-800">Getting Around:</strong> Use the TTC subway/streetcar system. The UP Express train provides a 25-min link from Pearson Airport (YYZ) to downtown.</p>
+                    `
+                }},
+                vancouver: { name: "Vancouver, BC", type: "titan", tagline: "The Pacific Jewel", content: {
+                     identity: "Nestled between the Pacific Ocean and the Coast Mountains, Vancouver offers a rare and compelling fusion of a dynamic, cosmopolitan city with breathtaking, accessible nature. This unique geographical positioning has shaped its identity and made it one of the most acclaimed travel destinations in the world.",
+                    attractions: `
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                           <li><b>Stanley Park:</b> A 1,000-acre temperate rainforest with the iconic Seawall path.</li>
+                           <li><b>Granville Island:</b> A vibrant arts hub with a famous public market and artisan workshops.</li>
+                           <li><b>Capilano Suspension Bridge:</b> A thrilling walk 70 meters above the Capilano River.</li>
+                           <li><b>Grouse Mountain:</b> Offers panoramic city views, hiking (the Grouse Grind), and a grizzly bear refuge.</li>
+                        </ul>`,
+                    culinary: "Defined by fresh, sustainable West Coast seafood and innovative Asian fusion. Key experiences include trying wild salmon and Dungeness crab, sampling some of North America's best sushi and ramen, and tasting the unique <b>Japadog</b> street food.",
+                    logistics: `
+                        <p class="mb-2"><strong class="text-gray-800">Best Time:</strong> Summer (Jun-Sep) for the warmest, driest weather, ideal for outdoor activities.</p>
+                        <p class="mb-2"><strong class="text-gray-800">Avg. Daily Cost (Mid-Range):</strong> ~$225 CAD</p>
+                        <p><strong class="text-gray-800">Getting Around:</strong> The TransLink system (SkyTrain, bus, SeaBus) is efficient. The Canada Line SkyTrain connects the airport (YVR) to downtown.</p>
+                    `
+                }},
+                montreal: { name: "Montreal, QC", type: "titan", tagline: "The Cultural Epicenter", content: {
+                    identity: "Montreal stands as a unique cultural beacon in North America, offering a vibrant synthesis of European charm and modern, creative energy. Its primary appeal lies in its rich history and world-class festival circuit.",
+                    attractions: `
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                           <li><b>Old Montreal:</b> Cobblestone streets and 17th-century architecture, anchored by the Notre-Dame Basilica.</li>
+                           <li><b>Festival Hub:</b> Home to the world's largest Jazz Festival and the Just for Laughs Comedy Festival.</li>
+                           <li><b>Mount Royal Park:</b> A large hill in the city center offering great views and recreational space.</li>
+                        </ul>`,
+                    culinary: "A true food lover's paradise. Famous for its distinct style of <b>bagels</b> (boiled in honey-sweetened water) and iconic <b>smoked meat sandwiches</b> from delis like Schwartz's.",
+                    logistics: "Details coming soon."
+                }},
+                quebec_city: { name: "Quebec City, QC", type: "acclaimed", tagline: "The Historic Heart", content: {
+                    identity: "Quebec City's appeal lies in its remarkably preserved history and its distinct European character, offering a travel experience unlike any other in North America. It is consistently named the #1 city in Canada by travel publications for its charm and atmosphere.",
+                    attractions: `
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                           <li><b>Old Québec:</b> A UNESCO World Heritage site, the only fortified city north of Mexico.</li>
+                           <li><b>Château Frontenac:</b> The world's most photographed hotel, dominating the city skyline.</li>
+                           <li><b>Montmorency Falls:</b> A waterfall 1.5 times taller than Niagara, just minutes from the city.</li>
+                           <li><b>Plains of Abraham:</b> Historic battlefield, now a massive urban park hosting major events.</li>
+                        </ul>`,
+                    culinary: "Rooted in French traditions, the cuisine is hearty and unique. The most famous invention is <b>Poutine</b>. Other classics include Tourtière (meat pie) and dishes featuring maple syrup from a traditional sugar shack (cabane à sucre).",
+                    logistics: `
+                        <p class="mb-2"><strong class="text-gray-800">Best Time:</strong> A true four-season city. Summer for festivals, winter for the magical Carnival, and shoulder seasons for value.</p>
+                        <p class="mb-2"><strong class="text-gray-800">Avg. Daily Cost (Mid-Range):</strong> ~$170 CAD</p>
+                        <p><strong class="text-gray-800">Getting Around:</strong> The historic core is extremely walkable. Many hotels offer free 3-day RTC bus passes for exploring further.</p>
+                    `
+                }},
+                 victoria: { name: "Victoria, BC", type: "acclaimed", tagline: "The Garden City", content: {
+                    identity: "Consistently named one of the best small cities in the world, Victoria is a paragon of charm, beauty, and hospitality. Its identity is rooted in stately British architecture, lush green spaces, and a relaxed, coastal pace of life.",
+                    attractions: `
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                           <li><b>The Butchart Gardens:</b> A world-famous, 55-acre floral display that is a National Historic Site of Canada.</li>
+                           <li><b>Inner Harbour:</b> A picturesque hub for whale watching tours, seaplanes, and government buildings.</li>
+                           <li><b>Historic Downtown:</b> Filled with heritage buildings, charming boutiques, and a vibrant food scene.</li>
+                        </ul>`,
+                    culinary: "Named a top international food city, Victoria's scene emphasizes farm-to-table dining and fresh, local ingredients from Vancouver Island and the surrounding ocean. Its British heritage is also visible in its many tearooms.",
+                    logistics: "Details coming soon."
+                }},
+                 calgary: { name: "Calgary, AB", type: "acclaimed", tagline: "Gateway to the Rockies", content: {
+                    identity: "Calgary is a vital hub for Western Canada, best known for its vibrant western heritage and its role as the primary gateway to the Canadian Rockies. It's a modern city with deep roots in cowboy culture.",
+                    attractions: `
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                           <li><b>Calgary Stampede:</b> "The Greatest Outdoor Show on Earth," a 10-day rodeo and festival each July.</li>
+                           <li><b>Canadian Rockies Access:</b> The primary starting point for trips to Banff and Jasper National Parks.</li>
+                           <li><b>Calgary Tower:</b> Offers panoramic views of the city and the distant mountains.</li>
+                        </ul>`,
+                    culinary: "The food scene is known for its high-quality Alberta beef, with many top-tier steakhouses. It also has a burgeoning craft beer scene and a diverse range of international cuisines.",
+                    logistics: "Details coming soon."
+                }},
+                magdalen_islands: { name: "Magdalen Islands, QC", type: "emerging", tagline: "Remote Coastal Beauty", content: {
+                    identity: "Located in the Gulf of St. Lawrence, this remote archipelago offers a unique travel experience with its windswept beaches, red sandstone cliffs, and distinct Madelinot culture rooted in Acadian heritage.",
+                    attractions: `
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                           <li><b>Scenic Landscapes:</b> Dramatic cliffs, white-sand beaches, and six iconic lighthouses.</li>
+                           <li><b>Local Culture:</b> Experience the unique dialect, music, and food of the islanders.</li>
+                        </ul>`,
+                    culinary: "The scene is hyper-local, focusing on fresh lobster and seafood, along with artisan cheeses from spots like La Fromagerie du Pied-de-Vent.",
+                    logistics: `
+                        <p><strong class="text-gray-800">Access:</strong> Reachable via a 5-hour ferry from PEI or a 2-hour flight from Montreal.</p>
+                    `
+                }},
+                battle_harbour: { name: "Battle Harbour, NL", type: "emerging", tagline: "A Digital Detox", content: {
+                    identity: "A meticulously restored 19th-century fishing outport, this National Historic District is a living museum. With no cars, power lines, or cell service, it offers a complete escape to a simpler time.",
+                    attractions: `
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                           <li><b>Historic Immersion:</b> Stay in heritage properties and explore historic salt fish premises.</li>
+                           <li><b>Nature Viewing:</b> Take boat tours to see majestic icebergs and whales in the Labrador Sea.</li>
+                        </ul>`,
+                    culinary: "Meals are served family-style, replicating the communal dining experience of fishermen from centuries past, with a focus on traditional Newfoundland cooking.",
+                    logistics: `
+                         <p><strong class="text-gray-800">Access:</strong> Reachable only by a short ferry ride from Mary's Harbour, Labrador.</p>
+                    `
+                }}
+            },
+            personas: {
+                urban: { 
+                    title: 'Urban Explorer', 
+                    icon: '🏙️',
+                    content: `This traveler seeks cultural consumption and vibrant experiences.
+                    <br><br><strong>Top Destinations:</strong>
+                    <ul class='list-disc list-inside ml-4 mt-2'>
+                        <li><strong>Toronto:</strong> For its sheer scale, world-class museums, and incredibly diverse neighborhoods and food scene.</li>
+                        <li><strong>Montreal:</strong> For its unique blend of North American energy and European charm, plus a world-class festival circuit.</li>
+                    </ul>`
+                },
+                history: { 
+                    title: 'History & Culture Seeker',
+                    icon: '🏛️', 
+                    content: `This traveler wants to immerse themselves in a distinct cultural atmosphere.
+                     <br><br><strong>Top Destinations:</strong>
+                    <ul class='list-disc list-inside ml-4 mt-2'>
+                        <li><strong>Quebec City:</strong> For its preserved Old Town, French heritage, and palpable European feel.</li>
+                        <li><strong>Victoria:</strong> For its charming British colonial architecture and historic sites.</li>
+                        <li><strong>Battle Harbour:</strong> For a unique, living history experience in a restored 19th-century outport.</li>
+                    </ul>`
+                },
+                nature: { 
+                    title: 'Adventure & Nature Enthusiast',
+                    icon: '🏞️',
+                    content: `This traveler's motivation is to engage directly with Canada's celebrated wilderness.
+                     <br><br><strong>Top Destinations:</strong>
+                    <ul class='list-disc list-inside ml-4 mt-2'>
+                        <li><strong>Vancouver:</strong> The ultimate blend of a dynamic city with immediate access to mountains and ocean.</li>
+                        <li><strong>Calgary:</strong> The essential starting point for any adventure into the Canadian Rockies.</li>
+                        <li><strong>Campbell River:</strong> A premier hub for fishing, whale watching, and grizzly bear tours.</li>
+                    </ul>`
+                },
+                value: { 
+                    title: 'Domestic Value Seeker',
+                    icon: '💰',
+                    content: `This traveler is looking for authentic, affordable Canadian experiences off the beaten path.
+                     <br><br><strong>Top Destinations:</strong>
+                    <ul class='list-disc list-inside ml-4 mt-2'>
+                        <li><strong>Emerging Cities:</strong> Consider value-driven hubs like Winnipeg, Saskatoon, and Gatineau.</li>
+                        <li><strong>Regional Gems:</strong> Explore charming, accessible towns like Summerside, PEI for an authentic Maritime experience.</li>
+                    </ul>`
+                }
+            }
+        };
+
+        let recoveryChart, internationalSpendChart, domesticSpendChart, costChart;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initRecoveryChart();
+            initSpendCharts();
+            initCostChart();
+            populateDestinations('all');
+            populatePersonas();
+            populateSeasonalGrid();
+            setActiveLink(document.querySelector('.nav-link'));
+        });
+
+        function setActiveLink(link) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        }
+
+        function initRecoveryChart() {
+            const ctx = document.getElementById('recoveryChart').getContext('2d');
+            recoveryChart = new Chart(ctx, {
+                data: {
+                    labels: ['2019', '2020', '2021', '2022', '2023', '2024 (proj)'],
+                    datasets: [{
+                        type: 'bar',
+                        label: 'Total Tourism Revenue ($B CAD)',
+                        data: [29.8, 13.6, 14.4, 24.2, 38.5, 49.4],
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        yAxisID: 'y1',
+                    }, {
+                        type: 'line',
+                        label: 'International Arrivals (Millions)',
+                        data: [22.1, 3.0, 3.1, 12.8, 18.3, 19.9],
+                        borderColor: '#064E3B',
+                        backgroundColor: '#064E3B',
+                        tension: 0.3,
+                        yAxisID: 'y',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Arrivals (Millions)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Revenue ($B CAD)' }
+                        }
+                    },
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        }
+
+        function initSpendCharts() {
+            const internationalCtx = document.getElementById('internationalSpendChart').getContext('2d');
+            internationalSpendChart = new Chart(internationalCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Accommodations', 'Food & Bev', 'Transport', 'Other'],
+                    datasets: [{ data: [36.4, 25, 20, 18.6], backgroundColor: ['#059669', '#34D399', '#6EE7B7', '#A7F3D0'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            const domesticCtx = document.getElementById('domesticSpendChart').getContext('2d');
+            domesticSpendChart = new Chart(domesticCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Food & Bev', 'Transport', 'Accommodations', 'Other'],
+                    datasets: [{ data: [30.8, 28, 22, 19.2], backgroundColor: ['#059669', '#34D399', '#6EE7B7', '#A7F3D0'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function initCostChart() {
+            const ctx = document.getElementById('costChart').getContext('2d');
+            costChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Quebec City', 'Vancouver', 'Toronto'],
+                    datasets: [{
+                        label: 'Avg. Daily Cost (CAD)',
+                        data: [170, 225, 337],
+                        backgroundColor: ['#10B981', '#34D399', '#6EE7B7'],
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: { x: { title: { display: true, text: 'CAD ($)' } } }
+                }
+            });
+        }
+
+        function populateDestinations(filter) {
+            const grid = document.getElementById('destination-grid');
+            grid.innerHTML = '';
+            Object.entries(appData.destinations).forEach(([key, dest]) => {
+                if (filter === 'all' || dest.type === filter) {
+                    const card = document.createElement('div');
+                    card.className = `bg-white rounded-lg shadow-md p-6 text-center cursor-pointer transition-transform transform hover:scale-105 fade-in`;
+                    card.setAttribute('onclick', `showCityProfile('${key}')`);
+                    card.innerHTML = `
+                        <h4 class="text-xl font-bold text-emerald-700">${dest.name}</h4>
+                        <p class="text-gray-500 mt-2">${dest.tagline}</p>
+                    `;
+                    grid.appendChild(card);
+                }
+            });
+        }
+
+        function filterDestinations(filter) {
+            populateDestinations(filter);
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.filter-btn[onclick="filterDestinations('${filter}')"]`).classList.add('active');
+        }
+
+        function showCityProfile(cityKey) {
+            const dest = appData.destinations[cityKey];
+            if (!dest) return;
+            const container = document.getElementById('city-profile-container');
+            container.innerHTML = `
+                <h3 class="text-3xl font-bold mb-2 text-gray-800">${dest.name}</h3>
+                <div class="mb-6 border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-2 md:space-x-6 overflow-x-auto" aria-label="Tabs">
+                        <button onclick="switchTab(this, '${cityKey}', 'identity')" class="city-profile-tab active whitespace-nowrap py-3 px-2 md:px-3 border-b-2 font-medium text-sm rounded-t-lg">Identity</button>
+                        <button onclick="switchTab(this, '${cityKey}', 'attractions')" class="city-profile-tab whitespace-nowrap py-3 px-2 md:px-3 border-b-2 font-medium text-sm rounded-t-lg">Attractions</button>
+                        <button onclick="switchTab(this, '${cityKey}', 'culinary')" class="city-profile-tab whitespace-nowrap py-3 px-2 md:px-3 border-b-2 font-medium text-sm rounded-t-lg">Culinary</button>
+                        <button onclick="switchTab(this, '${cityKey}', 'logistics')" class="city-profile-tab whitespace-nowrap py-3 px-2 md:px-3 border-b-2 font-medium text-sm rounded-t-lg">Logistics</button>
+                    </nav>
+                </div>
+                <div id="profile-content" class="text-gray-700 leading-relaxed fade-in">
+                    ${dest.content.identity}
+                </div>
+            `;
+            container.classList.remove('hidden');
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function switchTab(button, cityKey, tabName) {
+            const dest = appData.destinations[cityKey];
+            if (!dest.content[tabName]) return;
+            document.querySelectorAll('.city-profile-tab').forEach(b => b.classList.remove('active'));
+            button.classList.add('active');
+            const contentDiv = document.getElementById('profile-content');
+            contentDiv.innerHTML = dest.content[tabName];
+            contentDiv.classList.remove('fade-in');
+            void contentDiv.offsetWidth;
+            contentDiv.classList.add('fade-in');
+        }
+
+        function populateSeasonalGrid() {
+            const container = document.getElementById('seasonal-grid-container');
+            const seasons = {
+                Spring: "Shoulder: Mild weather, good value. Best for Northeast.",
+                Summer: "High: Warmest weather, largest crowds & prices. Best for West Coast/Rockies.",
+                Fall: "Shoulder: Crisp air, fall foliage. Best for Southeast & Quebec.",
+                Winter: "Low/High: Lowest prices (most regions) OR high season for ski/carnival destinations."
+            };
+            let html = '';
+            Object.entries(seasons).forEach(([season, desc]) => {
+                html += `
+                <div class="p-4 bg-emerald-50 rounded-lg">
+                    <h5 class="font-bold text-emerald-800">${season}</h5>
+                    <p class="text-sm text-emerald-700">${desc}</p>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function populatePersonas() {
+            const container = document.getElementById('persona-container');
+            let html = '';
+            Object.entries(appData.personas).forEach(([key, persona]) => {
+                html += `
+                    <div onclick="showPersonaDetail('${key}')" class="p-6 bg-white rounded-lg shadow-md cursor-pointer transition-transform transform hover:scale-105">
+                        <div class="text-4xl mb-3">${persona.icon}</div>
+                        <h4 class="font-bold text-lg text-emerald-700">${persona.title}</h4>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function showPersonaDetail(personaKey) {
+            const persona = appData.personas[personaKey];
+            const container = document.getElementById('persona-details-container');
+            container.innerHTML = `
+                <div class="bg-emerald-50 p-6 rounded-lg fade-in">
+                    <h4 class="text-2xl font-bold text-emerald-800 mb-4">${persona.title}</h4>
+                    <p class="text-emerald-700 leading-relaxed">${persona.content}</p>
+                </div>
+            `;
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>

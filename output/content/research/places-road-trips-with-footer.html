@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Road Trip Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals & Earth Tones) -->
+    <!-- Application Structure Plan: The application is designed as an interactive "Road Trip Explorer" that transforms the report from a linear document into a user-driven discovery tool. The core user flow is centered on selecting one or more "Traveler Archetypes" (Icon, Adventurer, Purist, Culturist). This choice acts as the primary filter, dynamically displaying a gallery of road trip cards tailored to that style. This is more engaging than a static table of contents. Users can then click a card to open a detailed modal with tabbed content (Itinerary, Planning) for deep dives. The app also includes a "Comparison Dashboard" with an interactive chart for at-a-glance analysis of trip duration and difficulty, and a dedicated, highly visible "Essential Preparation" section for critical safety checklists. This structure guides the user from inspiration (archetype) to exploration (cards), deep analysis (modal), and practical planning (prep guide). -->
+    <!-- Visualization & Content Choices: Report Info: Traveler Archetypes -> Goal: Organize & Filter -> Viz/Method: Interactive filter buttons with icons. -> Interaction: User clicks on an archetype to filter the road trip grid. -> Justification: Transforms the report's core structure into the main navigation, making it personal and intuitive. Method: HTML/Tailwind/JS. | Report Info: Global Road Trip At-a-Glance Table -> Goal: Compare -> Viz/Method: Interactive Bar Chart. -> Interaction: Users can visually compare trip durations and see difficulty levels via color-coding. Hovering provides details. -> Justification: Converts a static data table into an engaging visual comparison tool. Library: Chart.js/Canvas. | Report Info: Key Table 2 (Preparation Checklist) -> Goal: Inform/Action -> Viz/Method: A structured, easily scannable grid of checklist cards. -> Justification: Presents critical safety information in a highly visible and digestible format, superior to a dense table within a long text block. Method: HTML/Tailwind. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F9F9F9; color: #374151; }
+        .archetype-btn { transition: all 0.2s ease-in-out; }
+        .archetype-btn.active { background-color: #A16207; color: white; box-shadow: 0 4px 14px 0 rgb(161 98 7 / 30%); }
+        .card-enter { animation: card-enter 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes card-enter { to { opacity: 1; transform: translateY(0); } }
+        .modal { display: none; }
+        .modal.is-open { display: flex; }
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 450px; max-h-[50vh]; }
+        .tab-btn.active { border-color: #A16207; color: #A16207; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-200">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-amber-800">Road Trip Explorer</a>
+            <div class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#explorer" class="text-gray-600 hover:text-amber-800">Explore</a>
+                <a href="#compare" class="text-gray-600 hover:text-amber-800">Compare</a>
+                <a href="#prepare" class="text-gray-600 hover:text-amber-800">Prepare</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-10">
+        <section class="text-center py-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 tracking-tight">The Journey is the Destination</h1>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-600">Discover the world's most transformative road trips. This guide moves beyond the map, helping you find the journey that matches your spirit. Select your travel style below to begin exploring.</p>
+        </section>
+
+        <section id="explorer" class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-200">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4">What's Your Travel Style?</h2>
+                <p class="text-sm text-gray-500 mb-4">Select one or more styles to find your perfect journey.</p>
+                <div id="archetype-filters" class="flex flex-wrap justify-center gap-3"></div>
+            </div>
+
+            <div id="roadtrips-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated content -->
+            </div>
+        </section>
+
+        <section id="compare" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800">Trips at a Glance</h2>
+                <p class="mt-3 max-w-3xl mx-auto text-gray-600">Visualize and compare the world's greatest drives. This chart helps you quickly assess the duration and difficulty of each journey, so you can find the one that fits your timeline and comfort level.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                <div class="chart-container">
+                    <canvas id="tripsComparisonChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="prepare" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800">Essential Preparation for Remote Adventures</h2>
+                <p class="mt-3 max-w-3xl mx-auto text-gray-600">For extreme journeys like the Gibb River Road or the Dalton Highway, preparation is paramount. The vehicle is your lifeline. This guide outlines the non-negotiable gear and planning steps for a safe expedition.</p>
+            </div>
+            <div id="preparation-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-1">
+                    <h3 class="text-lg font-bold">Road Trip Explorer</h3>
+                    <p class="mt-2 text-sm text-gray-400">Your guide to the world's most transformative journeys. Plan your next adventure with our expert insights and interactive tools.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold tracking-wider uppercase text-gray-400 text-sm">Destinations</h4>
+                    <ul class="mt-4 space-y-2 text-sm">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Beaches</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Forts</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Theme Parks</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">National Parks</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold tracking-wider uppercase text-gray-400 text-sm">Travel Styles</h4>
+                    <ul class="mt-4 space-y-2 text-sm">
+                        <li><a href="#explorer" class="text-gray-300 hover:text-white transition-colors">The Icon</a></li>
+                        <li><a href="#explorer" class="text-gray-300 hover:text-white transition-colors">The Adventurer</a></li>
+                        <li><a href="#explorer" class="text-gray-300 hover:text-white transition-colors">The Purist</a></li>
+                        <li><a href="#explorer" class="text-gray-300 hover:text-white transition-colors">The Culturist</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold tracking-wider uppercase text-gray-400 text-sm">Resources</h4>
+                    <ul class="mt-4 space-y-2 text-sm">
+                        <li><a href="#prepare" class="text-gray-300 hover:text-white transition-colors">Preparation Guide</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm text-gray-500">
+                <p>&copy; 2025 Road Trip Explorer. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Structure -->
+    <div id="trip-modal" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-xl flex flex-col">
+            <div class="p-5 border-b border-gray-200 flex justify-between items-start">
+                <div>
+                    <h2 id="modal-title" class="text-2xl font-bold text-gray-800"></h2>
+                    <p id="modal-subtitle" class="text-gray-500"></p>
+                </div>
+                <button id="modal-close" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+            </div>
+            <div class="flex-shrink-0 px-5 border-b border-gray-200">
+                <div id="modal-tabs" class="flex -mb-px">
+                </div>
+            </div>
+            <div id="modal-content" class="p-6 overflow-y-auto">
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+const data = {
+    archetypes: [
+        { id: 'Icon', name: 'The Icon', description: 'Legendary routes etched in global consciousness.', icon: '👑' },
+        { id: 'Adventurer', name: 'The Adventurer', description: 'Craves the challenge of remote and rugged terrain.', icon: '🧗' },
+        { id: 'Purist', name: 'The Purist', description: 'Total immersion in landscapes of natural grandeur.', icon: '🏞️' },
+        { id: 'Culturist', name: 'The Culturist', description: 'Connects with history, art, and local flavors.', icon: '🏛️' }
+    ],
+    roadTrips: [
+        { id: 1, name: 'Pacific Coast Highway', country: 'USA', archetypes: ['Icon'], duration: 7, difficulty: 'Moderate', vehicle: 'Standard Car / Convertible' },
+        { id: 2, name: 'Great Ocean Road', country: 'Australia', archetypes: ['Icon'], duration: 3, difficulty: 'Easy', vehicle: 'Standard Car' },
+        { id: 3, name: 'Route 66', country: 'USA', archetypes: ['Icon', 'Culturist'], duration: 14, difficulty: 'Easy', vehicle: 'Standard Car / Classic Car' },
+        { id: 4, name: 'Gibb River Road', country: 'Australia', archetypes: ['Adventurer'], duration: 14, difficulty: 'Extreme', vehicle: 'High-Clearance 4WD' },
+        { id: 5, name: 'Dalton Highway', country: 'USA', archetypes: ['Adventurer'], duration: 4, difficulty: 'Extreme', vehicle: 'High-Clearance 4WD' },
+        { id: 6, name: 'Transfăgărășan Highway', country: 'Romania', archetypes: ['Adventurer', 'Purist'], duration: 2, difficulty: 'Challenging', vehicle: 'Small, Nimble Car' },
+        { id: 7, name: 'Icefields Parkway', country: 'Canada', archetypes: ['Purist'], duration: 2, difficulty: 'Easy', vehicle: 'Standard Car' },
+        { id: 8, name: 'Wild Atlantic Way', country: 'Ireland', archetypes: ['Purist', 'Culturist'], duration: 14, difficulty: 'Moderate', vehicle: 'Small, Compact Car' },
+        { id: 9, name: 'South African Safari', country: 'South Africa', archetypes: ['Purist', 'Adventurer'], duration: 10, difficulty: 'Moderate', vehicle: 'SUV / 2WD' },
+        { id: 10, name: 'Amalfi Coast', country: 'Italy', archetypes: ['Culturist', 'Icon'], duration: 5, difficulty: 'Challenging', vehicle: 'Small Car / Ferry / Driver' },
+        { id: 11, name: 'Andean Highlands', country: 'Peru', archetypes: ['Culturist'], duration: 5, difficulty: 'Moderate', vehicle: 'Standard Car / Driver' },
+        { id: 12, name: 'Backroads of Kyoto', country: 'Japan', archetypes: ['Culturist'], duration: 3, difficulty: 'Easy', vehicle: 'Standard Car' }
+    ],
+    preparation: [
+        { category: 'Vehicle', items: [ { item: 'High-Clearance 4WD', rationale: 'Mandatory for rough terrain and river crossings.'}, { item: 'All-Terrain / Winter Tires', rationale: 'Crucial for rocky/icy surfaces.'}, { item: 'Full-Size Spares (x2)', rationale: 'Tire damage is the most common issue.'}, { item: 'Snorkel (Vehicle)', rationale: 'Reduces dust intake and essential for deep water crossings.'} ]},
+        { category: 'Recovery Gear', items: [ { item: 'Air Compressor & Tire Gauge', rationale: 'For adjusting tire pressures for different surfaces.'}, { item: 'Tire Repair Kit, Jack, Tools', rationale: 'You must be self-sufficient for basic repairs.'} ]},
+        { category: 'Supplies', items: [ { item: 'Jerry Cans (Fuel)', rationale: 'Fuel stops are hundreds of kilometers apart.'}, { item: 'Potable Water & Food', rationale: 'Carry several days\' worth of extras in case of breakdown.'} ]},
+        { category: 'Communication', items: [ { item: 'Satellite Phone or Messenger', rationale: 'There is NO cell service. This is your only link to help.'}, { item: 'CB Radio (Dalton Highway)', rationale: 'Main way to communicate with truckers for safety.'} ]},
+        { category: 'Safety & Survival', items: [ { item: 'Comprehensive First-Aid Kit', rationale: 'Medical help can be many hours or days away.'}, { item: 'Bear Spray (North America)', rationale: 'Mandatory for any hiking or stops in bear country.'}, { item: 'Emergency/Survival Gear', rationale: 'Blankets, extra warm clothing, shovel, flashlight.'} ]},
+        { category: 'Documentation', items: [ { item: 'Permits & Passes', rationale: 'National Park passes and camping permits must be acquired in advance.'}, { item: 'Offline Maps', rationale: 'GPS and cell service will fail. Carry physical or downloaded maps.'} ]},
+    ],
+    details: {
+        1: {
+            itinerary: `<strong>Day 1-2: LA & Southern Coast:</strong> Begin in Dana Point. Explore Laguna's Victoria Beach, Venice boardwalk, and Malibu's Neptune's Net.<br><strong>Day 3: American Riviera:</strong> Visit Santa Barbara and the Danish-inspired village of Solvang.<br><strong>Day 4-5: Big Sur:</strong> The most dramatic section. See elephant seals at Piedras Blancas, Hearst Castle, McWay Falls, and the Bixby Bridge.<br><strong>Day 6-7: Monterey to SF:</strong> Explore Monterey Bay Aquarium, Santa Cruz Boardwalk, and end at the Golden Gate Bridge.`,
+            planning: `<strong>Best Time:</strong> Spring (Feb-Apr) for green hills, Fall (Sep-Oct) for best weather and fewer crowds. Summer is often foggy.<br><strong>Vehicle:</strong> Any reliable car is suitable. 4WD not required.<br><strong>Safety:</strong> High risk of landslides, especially in winter. Check Caltrans for road closures. No cell service in Big Sur, so download offline maps.`
+        },
+        2: {
+            itinerary: `<strong>Day 1: Surf Culture:</strong> Start in Torquay, visit Bells Beach. Drive through Lorne and end in Apollo Bay.<br><strong>Day 2: Otways & Shipwreck Coast:</strong> Head inland to Great Otway National Park for rainforest walks. Emerge at the 12 Apostles for sunset.<br><strong>Day 3: Coastal Icons:</strong> Explore Loch Ard Gorge and London Bridge. Visit Tower Hill Wildlife Reserve for guaranteed koala and kangaroo sightings.`,
+            planning: `<strong>Best Time:</strong> Summer (Dec-Feb) for warmest weather, but peak crowds. Autumn/Spring offer a better balance. Winter for whale watching.<br><strong>Vehicle:</strong> Standard 2WD is sufficient.<br><strong>Safety:</strong> Drive on the left. Roads are winding. Watch for wildlife (kangaroos, wallabies) at dawn and dusk.`
+        },
+        4: {
+            itinerary: `<strong>Days 1-3: Western Gorges:</strong> Start in Derby. Explore Windjana Gorge and wade through Tunnel Creek.<br><strong>Days 4-7: Wunaamin Miliwundi Ranges:</strong> Base at Silent Grove or Mt Hart. Hike and swim at the iconic Bell Gorge and the quieter Galvans Gorge.<br><strong>Days 8-10: Central & Northern Detours:</strong> Fuel up at Mt Barnett Roadhouse to access Manning Gorge. Optional long side-trip to Mitchell Falls.<br><strong>Days 11-14: Eastern Terminus:</strong> Brave the Pentecost River crossing and explore the vast El Questro Wilderness Park before finishing in Kununurra.`,
+            planning: `<strong>Best Time:</strong> Only open during the dry season (May-Oct). Early season has best waterfall flows but highest river crossings. Late season is hotter and dustier.<br><strong>Vehicle:</strong> High-clearance 4WD is non-negotiable.<br><strong>Safety:</strong> Carry two spare tires, extra fuel, and a satellite phone. There is no cell service. River crossings are dangerous and can have saltwater crocodiles.`
+        },
+        6: {
+            itinerary: `<strong>Day 1: Northern Ascent:</strong> Begin near Cârțișoara. Climb through forest to alpine zone with hairpin turns. Stop at Bâlea Waterfall and take the cable car to Bâlea Lake at the summit.<br><strong>Day 2: Southern Descent:</strong> Pass through the 880m Bâlea Tunnel. Stop at the massive Vidraru Dam and Poenari Citadel (linked to Vlad the Impaler). Conclude in Curtea de Argeș.`,
+            planning: `<strong>Best Time:</strong> The road is only open from late June/early July to the end of October. Dates depend on snow clearance.<br><strong>Vehicle:</strong> A small, nimble car is best for the tight turns. Ensure brakes are in excellent condition.<br><strong>Safety:</strong> Roads are narrow with sheer drops. Expect unpredictable weather. Drive slowly and never feed the common brown bears near the road.`
+        },
+        7: {
+            itinerary: `<strong>Day 1: Lakes & Glaciers:</strong> From Lake Louise, stop at Herbert Lake, Bow Lake, and the iconic Peyto Lake. The centerpiece is the Columbia Icefield, where you can take a tour onto the Athabasca Glacier.<br><strong>Day 2: Waterfalls & Jasper:</strong> Visit the powerful Sunwapta Falls and Athabasca Falls. End with a hike at the Valley of the Five Lakes before arriving in Jasper.`,
+            planning: `<strong>Best Time:</strong> Summer (Jun-Sep) for best weather, thawed lakes, and open trails. Winter is extremely hazardous and services are closed.<br><strong>Vehicle:</strong> Standard car is fine in summer. Winter tires are mandatory from Nov 1 - Apr 1.<br><strong>Safety:</strong> No cell service. Carry bear spray for all hikes. Stay in your vehicle when viewing wildlife.`
+        },
+        10: {
+            itinerary: `<strong>Day 1: Sorrento & Positano:</strong> Base in Sorrento. Take a ferry to Positano for the best views. Explore the vertical village and enjoy a sunset cocktail.<br><strong>Day 2: Amalfi & Ravello:</strong> Ferry to Amalfi town, visit the Duomo. Bus up to Ravello to explore the stunning gardens of Villa Cimbrone and Villa Rufolo.<br><strong>Day 3: By Sea or By Land:</strong> Charter a boat to explore sea caves and swim, or take a train from Sorrento to explore the ancient ruins of Pompeii.`,
+            planning: `<strong>Best Time:</strong> Shoulder seasons (Apr-May, Sep-Oct) to avoid extreme traffic and crowds. <br><strong>Vehicle/Transport:</strong> Driving is extremely challenging due to narrow roads, traffic, and license plate restrictions in summer. Using ferries and buses is highly recommended.<br><strong>Safety:</strong> The road has sharp turns and sheer drops. If driving, be extremely cautious. The best way to see the coast is often from the water.`
+        }
+    }
+};
+
+        const archetypeFiltersEl = document.getElementById('archetype-filters');
+        const roadtripsGrid = document.getElementById('roadtrips-grid');
+        const preparationGrid = document.getElementById('preparation-grid');
+
+        const modal = document.getElementById('trip-modal');
+        const modalClose = document.getElementById('modal-close');
+        const modalTitle = document.getElementById('modal-title');
+        const modalSubtitle = document.getElementById('modal-subtitle');
+        const modalTabs = document.getElementById('modal-tabs');
+        const modalContent = document.getElementById('modal-content');
+        
+        let activeArchetypes = [];
+
+        function renderArchetypeFilters() {
+            archetypeFiltersEl.innerHTML = data.archetypes.map(arch => `
+                <button data-id="${arch.id}" class="archetype-btn px-4 py-2 bg-white text-gray-700 rounded-full shadow-sm border border-gray-200 hover:bg-gray-100 font-semibold flex items-center space-x-2">
+                    <span class="text-xl">${arch.icon}</span>
+                    <span>${arch.name}</span>
+                </button>
+            `).join('') + `<button id="reset-filters" class="archetype-btn px-4 py-2 bg-white text-gray-700 rounded-full shadow-sm border border-gray-200 hover:bg-gray-100 font-semibold">Reset</button>`;
+
+            document.querySelectorAll('.archetype-btn[data-id]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    btn.classList.toggle('active');
+                    if (activeArchetypes.includes(id)) {
+                        activeArchetypes = activeArchetypes.filter(a => a !== id);
+                    } else {
+                        activeArchetypes.push(id);
+                    }
+                    renderRoadTrips();
+                });
+            });
+
+            document.getElementById('reset-filters').addEventListener('click', () => {
+                activeArchetypes = [];
+                document.querySelectorAll('.archetype-btn.active').forEach(b => b.classList.remove('active'));
+                renderRoadTrips();
+            });
+        }
+        
+        function renderRoadTrips() {
+            const tripsToRender = activeArchetypes.length > 0
+                ? data.roadTrips.filter(trip => activeArchetypes.every(arch => trip.archetypes.includes(arch)))
+                : [];
+
+            roadtripsGrid.innerHTML = '';
+            
+            if (tripsToRender.length === 0) {
+                 const message = activeArchetypes.length > 0 
+                    ? `No trips match the selected travel style(s).` 
+                    : `Select a travel style above to see matching road trips.`;
+                 roadtripsGrid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">${message}</p>`;
+            } else {
+                tripsToRender.forEach((trip, index) => {
+                    const difficultyColors = { 'Easy': 'bg-green-100 text-green-800', 'Moderate': 'bg-yellow-100 text-yellow-800', 'Challenging': 'bg-orange-100 text-orange-800', 'Extreme': 'bg-red-100 text-red-800' };
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-lg shadow-sm border border-gray-200 p-5 cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col card-enter';
+                    card.style.animationDelay = `${index * 50}ms`;
+                    card.dataset.id = trip.id;
+
+                    card.innerHTML = `
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-bold text-gray-800">${trip.name}</h3>
+                            <p class="text-sm text-gray-500 mb-3">${trip.country}</p>
+                            <div class="flex items-center justify-between text-sm">
+                                <span><span class="font-semibold">Duration:</span> ${trip.duration}+ Days</span>
+                                <span class="px-2 py-1 rounded-full text-xs font-medium ${difficultyColors[trip.difficulty]}">${trip.difficulty}</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-4">Vehicle: ${trip.vehicle}</p>
+                    `;
+                    card.addEventListener('click', () => openModal(trip.id));
+                    roadtripsGrid.appendChild(card);
+                });
+            }
+        }
+
+        function openModal(id) {
+            const trip = data.roadTrips.find(t => t.id == id);
+            if (!trip) return;
+
+            modalTitle.textContent = trip.name;
+            modalSubtitle.textContent = trip.country;
+
+            const tabData = data.details[id] || { itinerary: 'Detailed itinerary coming soon.', planning: 'Detailed planning advice coming soon.' };
+
+            modalTabs.innerHTML = `
+                <button class="tab-btn py-3 px-4 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700 active" data-content-key="itinerary">Itinerary</button>
+                <button class="tab-btn py-3 px-4 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700" data-content-key="planning">Planning & Safety</button>
+            `;
+
+            function renderTabContent(key) {
+                modalContent.innerHTML = `<div class="prose max-w-none text-gray-600">${tabData[key]}</div>`;
+            }
+
+            modalTabs.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modalTabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderTabContent(btn.dataset.contentKey);
+                });
+            });
+
+            renderTabContent('itinerary');
+            modal.classList.add('is-open');
+        }
+
+        function renderPreparationGrid() {
+            preparationGrid.innerHTML = data.preparation.map(cat => `
+                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+                    <h4 class="font-bold text-amber-800 mb-3">${cat.category}</h4>
+                    <ul class="space-y-3 text-sm">
+                        ${cat.items.map(item => `
+                            <li>
+                                <strong class="text-gray-800">${item.item}</strong><br>
+                                <span class="text-gray-500">${item.rationale}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+        
+        function renderComparisonChart() {
+            const ctx = document.getElementById('tripsComparisonChart').getContext('2d');
+            const sortedTrips = [...data.roadTrips].sort((a, b) => b.duration - a.duration);
+            
+            const difficultyColors = { 'Easy': '#4ade80', 'Moderate': '#facc15', 'Challenging': '#fb923c', 'Extreme': '#f87171' };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedTrips.map(trip => [trip.name, trip.country]),
+                    datasets: [{
+                        label: 'Recommended Duration (Days)',
+                        data: sortedTrips.map(trip => trip.duration),
+                        backgroundColor: sortedTrips.map(trip => difficultyColors[trip.difficulty]),
+                        borderColor: sortedTrips.map(trip => difficultyColors[trip.difficulty]),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const label = tooltipItems[0].label;
+                                    return label.split(',');
+                                },
+                                footer: function(tooltipItems) {
+                                    const trip = sortedTrips[tooltipItems[0].dataIndex];
+                                    return `Difficulty: ${trip.difficulty}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Recommended Duration (Days)' } },
+                        y: { ticks: { autoSkip: false } }
+                    }
+                }
+            });
+        }
+
+
+        // Initial setup
+        renderArchetypeFilters();
+        renderRoadTrips();
+        renderPreparationGrid();
+        renderComparisonChart();
+        
+        modalClose.addEventListener('click', () => modal.classList.remove('is-open'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                 modal.classList.remove('is-open');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: The Architectural Heritage of India</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: The infographic follows a clear narrative flow, designed for a single-page scroll experience. It starts with a high-impact header and a key statistic to hook the user. The story unfolds chronologically through an HTML-based timeline of architectural eras. This is followed by a comparative section using bar charts to deconstruct key styles. The narrative then focuses on the modern legacy, using donut charts and big numbers to highlight key tourism and revenue data from the report. The final section visualizes the "preservation paradox." This top-down structure—from broad history to specific contemporary issues—makes the complex report data digestible and tells a coherent story. -->
+    <!-- Visualization & Content Choices: 1. UNESCO Sites (Key Metric -> Goal: Inform -> Viz: Single Big Number -> Justification: Immediate high-impact fact to establish scale. -> Method: HTML). 2. Architectural Timeline (Chronology -> Goal: Show Change -> Viz: HTML/CSS Flowing Timeline -> Justification: A simple, non-interactive visual flow is better for a static infographic than a clickable element. -> Method: HTML/CSS). 3. Style DNA (Comparative Analysis -> Goal: Compare -> Viz: Grouped Bar Charts -> Justification: Allows direct, quantitative-style comparison of abstract features like material preference. -> Library: Chart.js). 4. Tourism Shift (Visitor Data -> Goal: Compare -> Viz: Donut Charts -> Justification: Clearly shows the change in composition (domestic vs. foreign) which is the core of the finding. -> Library: Chart.js). 5. Revenue Paradox (Financial Data -> Goal: Inform -> Viz: Single Big Number with Context -> Justification: The sharp contrast in the percentage change is the key story, best told with a bold, simple stat. -> Method: HTML). 6. Preservation Paradox (Process Flow -> Goal: Organize -> Viz: HTML/CSS Diagram -> Justification: A flowchart simply illustrates the dual nature of commercialization described in the report. -> Method: HTML/CSS). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #050A30; /* Imperial Blue */
+            color: #FFFFFF;
+        }
+        h1, h2, h3, h4, .stat-text {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+        .bg-card {
+            background-color: #000C66; /* Navy Blue */
+        }
+        .text-accent-pink { color: #FF007F; } /* Vibrant Pink */
+        .text-accent-cyan { color: #00FFFF; } /* Bright Cyan */
+        .text-accent-yellow { color: #FFFF00; } /* Electric Yellow */
+        .border-accent-pink { border-color: #FF007F; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            left: -0.875rem;
+            width: 1.75rem;
+            height: 1.75rem;
+            background-color: #00FFFF;
+            border-radius: 9999px;
+            border: 4px solid #050A30;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="text-center my-12">
+            <h1 class="text-5xl md:text-7xl font-bold text-accent-yellow tracking-wider">India's</h1>
+            <h2 class="text-4xl md:text-6xl font-bold tracking-wide">Architectural Legacy</h2>
+            <p class="mt-4 text-lg max-w-3xl mx-auto">A visual synthesis of millennia of history, from ancient foundations to modern challenges.</p>
+        </header>
+
+        <section class="my-16">
+            <div class="text-center bg-card rounded-xl p-8 max-w-md mx-auto shadow-lg">
+                <h3 class="text-2xl font-bold mb-2">UNESCO World Heritage Sites</h3>
+                <p class="stat-text text-8xl font-bold text-accent-cyan">42</p>
+                <p class="mt-2 text-md">A testament to India's "Outstanding Universal Value," including majestic forts, serene tombs, and ancient temple complexes.</p>
+            </div>
+        </section>
+        
+        <section class="my-20">
+            <h2 class="text-4xl font-bold text-center mb-8">A Timeline of Titans</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12">Indian architecture is a palimpsest, with each era layering new ideas onto ancient foundations. This timeline traces the dominant styles that shaped the subcontinent's iconic monuments.</p>
+            <div class="relative pl-8 border-l-4 border-accent-pink">
+                <div class="timeline-item mb-12">
+                    <h4 class="text-2xl font-bold text-accent-cyan">c. 2600 BCE: Indus Valley</h4>
+                    <p>Primarily civic, not imperial. Baked brick cities with grid layouts and advanced drainage showed sophisticated urban planning.</p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h4 class="text-2xl font-bold text-accent-cyan">c. 300 BCE: Mauryan</h4>
+                    <p>Shift to stone as an imperial statement. Monolithic pillars and the first great stupas project the power of the state.</p>
+                </div>
+                 <div class="timeline-item mb-12">
+                    <h4 class="text-2xl font-bold text-accent-cyan">c. 400 CE: Gupta & Medieval</h4>
+                    <p>The birth of structural Hindu temples. Two major styles emerge: the curvilinear Nagara in the North and the pyramidal Dravidian in the South.</p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h4 class="text-2xl font-bold text-accent-cyan">c. 1200 CE: Delhi Sultanate</h4>
+                    <p>Arrival of the arch and dome. A new Indo-Islamic grammar is forged, often reusing materials from earlier structures.</p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h4 class="text-2xl font-bold text-accent-cyan">c. 1500 CE: Mughal Empire</h4>
+                    <p>The zenith of imperial architecture. A refined synthesis defined by symmetry, bulbous domes, formal gardens, and exquisite decoration.</p>
+                </div>
+                 <div class="timeline-item mb-12">
+                    <h4 class="text-2xl font-bold text-accent-cyan">c. 700-1800 CE: Rajput Kingdoms</h4>
+                    <p>Architecture of resilience. Formidable hill forts integrated with the landscape, housing ornate palaces that blended defense with luxury.</p>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-2xl font-bold text-accent-cyan">c. 1800 CE: Colonial Era</h4>
+                    <p>A tool of empire. European forms (Gothic, Neoclassical) fused with Indian motifs to create the Indo-Saracenic style, legitimizing British rule.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="my-20">
+             <h2 class="text-4xl font-bold text-center mb-8">Decoding the Style DNA</h2>
+             <p class="text-center max-w-3xl mx-auto mb-12">The dominant Mughal and Rajput styles, while often intertwined, had distinct architectural signatures. This comparison breaks down their core components, revealing different philosophies of power and design.</p>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="bg-card p-6 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-4">Preferred Materials</h3>
+                    <div class="chart-container h-64">
+                        <canvas id="materialsChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-sm">Mughals favored the imperial grandeur of red sandstone and pure white marble. Rajputs relied on durable, local stone suited to their rugged terrain.</p>
+                </div>
+                <div class="bg-card p-6 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-4">Key Structural Elements</h3>
+                    <div class="chart-container h-64">
+                        <canvas id="structuresChart"></canvas>
+                    </div>
+                     <p class="text-center mt-4 text-sm">Mughal architecture is defined by the soaring arch and dome, while Rajput structures are known for their distinctive pavilions (*chhatris*) and ornate balconies (*jharokhas*).</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="my-20">
+            <h2 class="text-4xl font-bold text-center mb-8">The Modern Legacy: A Tourism Paradox</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12">India's monuments are vital economic engines, but post-pandemic recovery reveals a complex challenge. While more people are visiting, revenue is falling, exposing a structural vulnerability in heritage funding.</p>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="bg-card p-6 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-4">Shift in Visitor Profile</h3>
+                    <div class="chart-container">
+                        <canvas id="visitorsChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-sm">An analysis of 143 key monuments from 2019-20 to 2023-24 shows a massive 21.75% surge in domestic tourism, while high-paying foreign tourism has yet to recover.</p>
+                </div>
+                 <div class="text-center bg-card rounded-xl p-8 shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2">Resulting Revenue Impact</h3>
+                    <p class="stat-text text-8xl font-bold text-accent-pink">-2.83%</p>
+                    <p class="mt-2 text-md">Despite a 19% rise in total footfall, the decline in foreign visitors led to a drop in overall ticket revenue, highlighting a reliance on the international market.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="my-20">
+            <h2 class="text-4xl font-bold text-center mb-8">The Preservation Paradox</h2>
+            <p class="text-center max-w-3xl mx-auto mb-12">Managing heritage sites involves a delicate balance. Commercialization is necessary for funding but risks compromising the very authenticity that makes these sites valuable.</p>
+            <div class="max-w-2xl mx-auto bg-card p-8 rounded-xl shadow-lg">
+                <div class="flex flex-col space-y-4">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-accent-yellow">Commercialization</h3>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <div class="w-px h-12 bg-white"></div>
+                    </div>
+                    <div class="flex justify-around text-center">
+                        <div class="w-1/2 pr-4">
+                            <h4 class="text-xl font-bold text-accent-cyan mb-2">The Upside (+)</h4>
+                            <p class="text-sm">Generates revenue for conservation, improves visitor amenities, and creates local employment.</p>
+                        </div>
+                        <div class="w-1/2 pl-4">
+                            <h4 class="text-xl font-bold text-accent-pink mb-2">The Downside (-)</h4>
+                            <p class="text-sm">Risks overcrowding, physical strain on sites, and a loss of historical authenticity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center max-w-2xl mx-auto mt-8">Sustainable management requires innovative funding models and community involvement to ensure these monuments survive not as theme parks, but as living history.</p>
+        </section>
+
+    </div>
+
+    <script>
+        const chartTooltipPlugin = {
+            tooltip: {
+                titleFont: { size: 16 },
+                bodyFont: { size: 14 },
+                padding: 12,
+                boxPadding: 4,
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        if (Array.isArray(label)) {
+                            return label.join(' ');
+                        }
+                        return label;
+                    }
+                }
+            }
+        };
+
+        const chartLegendPlugin = {
+            legend: {
+                labels: {
+                    color: '#FFFFFF',
+                    font: {
+                        size: 14
+                    }
+                }
+            }
+        };
+        
+        new Chart(document.getElementById('materialsChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Mughal', 'Rajput'],
+                datasets: [
+                    { label: 'Sandstone', data: [70, 80], backgroundColor: '#FF007F' },
+                    { label: 'Marble', data: [30, 20], backgroundColor: '#00FFFF' }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                scales: { x: { display: false, stacked: true }, y: { stacked: true, ticks: { color: '#FFFFFF' } } },
+                plugins: { ...chartTooltipPlugin, legend: { ...chartLegendPlugin.legend, position: 'bottom' } }
+            }
+        });
+
+        new Chart(document.getElementById('structuresChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Mughal', 'Rajput'],
+                datasets: [
+                    { label: 'Arches/Domes', data: [90, 10], backgroundColor: '#FF007F' },
+                    { label: 'Chhatris/Jharokhas', data: [10, 90], backgroundColor: '#00FFFF' }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                scales: { x: { display: false, stacked: true }, y: { stacked: true, ticks: { color: '#FFFFFF' } } },
+                plugins: { ...chartTooltipPlugin, legend: { ...chartLegendPlugin.legend, position: 'bottom' } }
+            }
+        });
+
+        new Chart(document.getElementById('visitorsChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Domestic Visitor Growth', 'Foreign Visitor Decline'],
+                datasets: [{
+                    data: [21.75, 16],
+                    backgroundColor: ['#00FFFF', '#FF007F'],
+                    borderColor: '#000C66',
+                    borderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { ...chartTooltipPlugin, legend: chartLegendPlugin.legend }
+            }
+        });
+    </script>
+</body>
+</html>

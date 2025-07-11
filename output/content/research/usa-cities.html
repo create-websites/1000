@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USA Cities: An Interactive Tourism Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard, moving away from the linear report structure for better usability. The information architecture is organized into three task-oriented sections: 1. 'Explore Cities': A central hub for discovery, allowing users to toggle between quantitative data ('Titans of Tourism' chart) and qualitative data ('Connoisseur's Choice' cards). Clicking an element dynamically loads a detailed, tabbed city profile, preventing information overload. 2. 'Compare & Plan': This section consolidates the report's comparative data, using interactive charts and a visual matrix for cost and seasonal analysis. 3. 'Traveler Profiles': This provides actionable advice by presenting traveler personas as clickable icons that reveal tailored recommendations. This structure enables a non-linear, user-driven exploration, allowing travelers to find relevant information quickly based on their priorities, whether they are comparing statistics, planning logistics, or seeking inspiration. -->
+    <!-- Visualization & Content Choices: 
+    - Visitor Arrivals: Report Info -> Top 10 cities by international arrivals. Goal -> Compare popularity. Viz -> Horizontal Bar Chart (Chart.js). Interaction -> Click bar to load city profile. Justification -> Best for ranked comparison.
+    - Qualitative Acclaim: Report Info -> Top-rated cities from T+L, CNT. Goal -> Showcase beloved cities. Viz -> Interactive Cards (HTML/Tailwind). Interaction -> Click card to load profile. Justification -> Visually engaging way to highlight qualitative winners.
+    - City Profiles: Report Info -> Detailed city descriptions. Goal -> Provide in-depth info. Viz -> Tabbed content area (HTML/JS). Interaction -> Click tabs for different sections (Identity, Attractions, etc.). Justification -> Organizes dense text into digestible chunks.
+    - Cost Comparison: Report Info -> Table of daily costs. Goal -> Compare affordability. Viz -> Grouped Bar Chart & HTML Table. Interaction -> Hover for details. Justification -> Chart provides quick visual comparison, table offers details.
+    - Seasonal Guide: Report Info -> Seasonal recommendations matrix. Goal -> Guide travel timing. Viz -> Color-coded interactive grid (HTML/Tailwind). Interaction -> Click cell for detailed description. Justification -> Highly visual and intuitive way to understand complex seasonal data.
+    - Traveler Personas: Report Info -> Tailored city recommendations. Goal -> Provide personalized advice. Viz -> Icon-based selection (HTML/JS). Interaction -> Click icon to show recommendations. Justification -> User-friendly and engaging navigation for finding specific advice. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 450px; max-height: 60vh; }
+        .cost-chart-container { position: relative; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; height: 400px; max-height: 50vh; }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #4f46e5; border-bottom-color: #4f46e5; }
+        .city-profile-tab.active { background-color: #4f46e5; color: #ffffff; }
+        .season-cell:hover { transform: scale(1.05); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-[#FDFBF8] text-[#333333]">
+
+    <header class="bg-[#FDFBF8]/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-indigo-600">USA City Traveler</h1>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#explore" class="nav-link text-gray-600 hover:text-indigo-600 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Explore Cities</a>
+                <a href="#compare" class="nav-link text-gray-600 hover:text-indigo-600 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Compare & Plan</a>
+                <a href="#profiles" class="nav-link text-gray-600 hover:text-indigo-600 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Traveler Profiles</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="intro" class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-800">Your Guide to American Urban Tourism</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                This interactive guide translates a comprehensive tourism report into an explorable experience. Discover top cities, compare travel data, and find destinations perfectly matched to your interests.
+            </p>
+        </section>
+
+        <section id="explore" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Explore America's Greatest Cities</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto">This section allows you to explore US cities through two lenses: pure popularity by visitor numbers, or critical acclaim from seasoned travelers. Use the buttons below to switch your view and click on any city to dive deeper into its unique profile.</p>
+                <div id="view-toggle" class="mt-6 inline-flex rounded-md shadow-sm">
+                    <button onclick="switchView('titans')" class="view-btn active px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-gray-200 rounded-l-lg hover:bg-indigo-700 focus:z-10 focus:ring-2 focus:ring-indigo-500">
+                        Titans of Tourism
+                    </button>
+                    <button onclick="switchView('connoisseurs')" class="view-btn px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-2 focus:ring-indigo-500">
+                        Connoisseur's Choice
+                    </button>
+                </div>
+            </div>
+
+            <div id="titans-view" class="view-content fade-in">
+                <div class="chart-container">
+                    <canvas id="visitorChart"></canvas>
+                </div>
+                <p class="text-center mt-4 text-sm text-gray-500">Click on a bar to view the detailed city profile.</p>
+            </div>
+
+            <div id="connoisseurs-view" class="view-content hidden fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                </div>
+            </div>
+            
+            <div id="city-profile-container" class="mt-16 bg-white rounded-xl shadow-lg p-6 md:p-8 hidden fade-in">
+            </div>
+        </section>
+
+        <section id="compare" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Compare & Plan Your Trip</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto">Effective planning is key to a great trip. This section provides tools to compare cities by daily cost and to understand the best time to visit based on seasonal patterns across the country, helping you make informed decisions for your itinerary.</p>
+            </div>
+            
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-12">
+                <h4 class="text-2xl font-bold text-center mb-6">Comparative Daily Cost Analysis</h4>
+                 <div class="cost-chart-container">
+                    <canvas id="costChart"></canvas>
+                </div>
+                <p class="text-center mt-4 text-sm text-gray-500">Estimated mid-range budget per person, per day. Hover over bars for a cost breakdown.</p>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h4 class="text-2xl font-bold text-center mb-8">Seasonal Strategy Guide</h4>
+                <div id="seasonal-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 text-center">
+                </div>
+                <p class="text-center mt-6 text-sm text-gray-500">Click on any square to see a detailed description for that season.</p>
+                <div id="seasonal-details" class="mt-6 p-4 bg-indigo-50 rounded-lg text-indigo-800 hidden fade-in"></div>
+            </div>
+        </section>
+
+        <section id="profiles" class="mb-12">
+             <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Find Your Perfect City Match</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto">The ideal destination depends on your personal travel style. Are you a foodie, a culture buff, a nature lover, or traveling with family? Click on a profile below to see our tailored recommendations based on the report's analysis.</p>
+            </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            </div>
+            <div id="persona-details-container" class="mt-8"></div>
+        </section>
+    </main>
+    <footer class="bg-gray-800 text-white text-center p-4">
+        <p>Data synthesized from "The American Metropolis" research report. App designed for interactive exploration.</p>
+    </footer>
+
+    <script>
+        const appData = {
+            cities: {
+                nyc: {
+                    name: "New York City, NY",
+                    visitors: 8890000,
+                    accolade: "The Global Epicenter",
+                    identity: "New York City is the quintessential global metropolis, a benchmark against which other world cities are measured. Its identity is a dense, vibrant tapestry woven from countless cultures, defined by a skyline of iconic landmarks and an undercurrent of relentless energy. It is a city of superlatives, offering an unparalleled concentration of art, culture, food, and commerce.",
+                    attractions: `
+                        <h5 class="font-bold mb-2">Iconic Landmarks:</h5>
+                        <ul class="list-disc list-inside mb-4 text-gray-600">
+                            <li>Observation Decks: Empire State Building, Top of the Rock, One World Observatory.</li>
+                            <li>Statue of Liberty & Ellis Island.</li>
+                            <li>Central Park: An 843-acre urban oasis.</li>
+                        </ul>
+                        <h5 class="font-bold mb-2">Cultural Institutions:</h5>
+                        <ul class="list-disc list-inside mb-4 text-gray-600">
+                            <li>The Metropolitan Museum of Art (The Met)</li>
+                            <li>Museum of Modern Art (MoMA) & Guggenheim Museum</li>
+                            <li>American Museum of Natural History & 9/11 Memorial & Museum</li>
+                        </ul>
+                         <h5 class="font-bold mb-2">Beyond the Postcard:</h5>
+                        <ul class="list-disc list-inside text-gray-600">
+                            <li>Explore outer boroughs like Brooklyn and Queens.</li>
+                            <li>Tenement Museum for immigrant history.</li>
+                            <li>Walking tours of Greenwich Village and SoHo.</li>
+                        </ul>
+                    `,
+                    culinary: "The city's culinary landscape is a universe of its own, from $1 pizza slices to Michelin-starred restaurants. Explore culturally rich neighborhoods like Chinatown, Little Italy, and Koreatown. Food tours offer a curated way to sample the best of the city, focusing on specific foods like pizza or exploring culinary hotspots like the East Village.",
+                    logistics: `
+                        <p class="mb-2"><strong class="text-gray-800">Best Time to Visit:</strong> Shoulder seasons (Apr-May, Sep-Oct) for mild weather. Low season (Jan-Feb) for best deals.</p>
+                        <p class="mb-2"><strong class="text-gray-800">Avg. Costs (Mid-Range):</strong> Hotel ~$225/night. Daily total ~$154-$184/person.</p>
+                        <p><strong class="text-gray-800">Getting Around:</strong> The MTA subway is the most efficient way to travel ($2.90/ride). Use the OMNY contactless payment system for ease; after 12 taps in a week, the rest are free.</p>
+                    `,
+                },
+                miami: { name: "Miami, FL", visitors: 4365000 },
+                la: { name: "Los Angeles, CA", visitors: 3603000 },
+                orlando: {
+                    name: "Orlando, FL",
+                    visitors: 3518000,
+                    accolade: "World Capital of Entertainment",
+                    identity: "Orlando's global identity is inextricably linked to its status as the world's theme park capital. It is a destination built on fantasy and family entertainment. Beyond the parks, a more nuanced identity is emerging with vibrant neighborhoods, a robust culinary scene, and accessible outdoor adventures.",
+                    attractions: `
+                        <h5 class="font-bold mb-2">The Theme Park Universe:</h5>
+                        <ul class="list-disc list-inside mb-4 text-gray-600">
+                            <li>Walt Disney World Resort (4 theme parks, 2 water parks)</li>
+                            <li>Universal Orlando Resort (2 theme parks, including The Wizarding World of Harry Potter)</li>
+                            <li>SeaWorld Orlando & LEGOLAND Florida Resort</li>
+                        </ul>
+                        <h5 class="font-bold mb-2">Beyond the Parks:</h5>
+                        <ul class="list-disc list-inside text-gray-600">
+                            <li>International Drive: ICON Park, SEA LIFE Aquarium, Madame Tussauds.</li>
+                            <li>Natural Adventures: Airboat tours, kayaking in natural springs (Wekiwa Springs).</li>
+                            <li>Quirky Spots: Historic Citrus Tower, Harry P. Leu Gardens.</li>
+                        </ul>
+                    `,
+                    culinary: "The dining scene has evolved far beyond park fare. Themed dining like Café Tu Tu Tango and Mythos Restaurant offers immersive experiences. An emerging foodie culture is recognized with Michelin stars at high-end spots like Knife & Spoon and Soseki. Food halls like East End Market provide accessible local flavors.",
+                    logistics: `
+                        <p class="mb-2"><strong class="text-gray-800">Best Time to Visit:</strong> Shoulder seasons (mid-Jan to Apr, mid-Sep to Oct) for pleasant weather and smaller crowds.</p>
+                        <p class="mb-2"><strong class="text-gray-800">Avg. Costs (Mid-Range):</strong> Hotel ~$120/night. Daily total ~$220+/person (heavily dependent on park tickets).</p>
+                        <p><strong class="text-gray-800">Getting Around:</strong> A rental car is often advantageous. The LYNX public bus system provides service, with specific tourist routes connecting the airport, I-Drive, and major parks.</p>
+                    `,
+                },
+                sf: { name: "San Francisco, CA", visitors: 2281000 },
+                vegas: { name: "Las Vegas, NV", visitors: 2077000 },
+                dc: { name: "Washington D.C.", visitors: 1611000 },
+                chicago: { 
+                    name: "Chicago, IL", 
+                    visitors: 1413000,
+                    accolade: "8x 'Best Big City' Winner",
+                    identity: "Chicago has established a remarkable record of sustained excellence. This consistent recognition underscores its successful formula: offering world-class museums, architecture, and dining in an environment that travelers perceive as more pleasant, clean, and accessible than its coastal counterparts.",
+                    attractions: "Details coming soon.",
+                    culinary: "Details coming soon.",
+                    logistics: "Details coming soon.",
+                },
+                honolulu: { name: "Honolulu, HI", visitors: 1322000 },
+                boston: { name: "Boston, MA", visitors: 1152000 },
+                santafe: {
+                    name: "Santa Fe, NM",
+                    accolade: "#1 Best City in the U.S. (T+L)",
+                    identity: "Crowned the #1 U.S. city by Travel + Leisure, Santa Fe lives up to its 'City Different' tagline. It is a high-desert cultural capital, celebrated for its unique synthesis of fine art, deep Native American and Hispanic heritage, distinctive regional cuisine, and a stunning natural setting.",
+                    attractions: `
+                        <h5 class="font-bold mb-2">Art & Museums:</h5>
+                        <ul class="list-disc list-inside mb-4 text-gray-600">
+                            <li>Canyon Road: Over 100 art galleries.</li>
+                            <li>Georgia O'Keeffe Museum & Museum Hill institutions.</li>
+                            <li>Meow Wolf's House of Eternal Return: An immersive, interactive art installation.</li>
+                        </ul>
+                        <h5 class="font-bold mb-2">History & Culture:</h5>
+                        <ul class="list-disc list-inside text-gray-600">
+                           <li>Historic Downtown Plaza.</li>
+                           <li>San Miguel Chapel: Claimed to be the oldest church in the continental U.S.</li>
+                           <li>Day trip to Taos Pueblo, a UNESCO World Heritage site.</li>
+                        </ul>
+                    `,
+                    culinary: "Santa Fe's culinary scene is a key part of its appeal. It's defined by inventive New Mexican cuisine, distinct from Mexican or Tex-Mex, and characterized by its use of red and green chile. A signature experience is the Santa Fe Margarita Trail, a curated tour of the city's best margaritas.",
+                    logistics: `
+                        <p class="mb-2"><strong class="text-gray-800">Best Time to Visit:</strong> Fall (Sep-Nov) is ideal for cool weather, fall colors, and major events with fewer crowds.</p>
+                        <p class="mb-2"><strong class="text-gray-800">Avg. Costs (Mid-Range):</strong> Hotel ~$175/night (highly seasonal). Daily total ~$120/person.</p>
+                        <p><strong class="text-gray-800">Getting Around:</strong> The historic downtown is compact and highly walkable. The Santa Fe Trails bus service is efficient for exploring further.</p>
+                    `,
+                },
+                neworleans: {
+                    name: "New Orleans, LA",
+                    accolade: "#2 Best City in the U.S. (T+L)",
+                    identity: "New Orleans, 'The Big Easy,' possesses an identity unlike any other. It's a place where unique Creole and Cajun culture permeates every aspect of life, expressed through its foundational music (jazz), world-renowned cuisine, and unabashed spirit of celebration.",
+                    attractions: `
+                        <h5 class="font-bold mb-2">Core Sights:</h5>
+                        <ul class="list-disc list-inside mb-4 text-gray-600">
+                            <li>The historic French Quarter and lively Bourbon Street.</li>
+                            <li>The National WWII Museum, a world-class institution.</li>
+                            <li>A ride on the historic St. Charles Streetcar through the Garden District.</li>
+                        </ul>
+                        <h5 class="font-bold mb-2">Cultural Immersions:</h5>
+                        <ul class="list-disc list-inside text-gray-600">
+                           <li>Backstreet Cultural Museum (Mardi Gras Indians).</li>
+                           <li>Studio Be for contemporary murals.</li>
+                           <li>Swamp and bayou tours for wildlife encounters.</li>
+                        </ul>
+                    `,
+                    culinary: "A premier food destination. Must-try staples include beignets from Cafe du Monde, rich gumbo, po'boy sandwiches, and chargrilled oysters. A new wave of restaurants like Dakar NOLA and Mosquito Supper Club are redefining the scene with innovative, reservation-only tasting menus.",
+                    logistics: `
+                        <p class="mb-2"><strong class="text-gray-800">Best Time to Visit:</strong> High season is Feb-May (Mardi Gras/Jazz Fest). Shoulder seasons (Sep-Jan) offer a sweet spot of mild weather and fewer people.</p>
+                        <p class="mb-2"><strong class="text-gray-800">Avg. Costs (Mid-Range):</strong> Hotel ~$150/night. Daily total ~$118-$128/person.</p>
+                        <p><strong class="text-gray-800">Getting Around:</strong> The French Quarter is highly walkable. The RTA streetcar system is both an attraction and practical transport for $1.25 per ride.</p>
+                    `,
+                },
+                seattle: {
+                    name: "Seattle, WA",
+                    accolade: "Most Beautiful City (Reddit/T+L)",
+                    identity: "Seattle, the Emerald City, is a dynamic metropolis where a pioneering spirit of innovation is set against a breathtaking natural backdrop. Its identity is defined by the unique interface between a global tech hub and stunning views of the Puget Sound and snow-capped mountains.",
+                     attractions: `
+                        <h5 class="font-bold mb-2">Urban Icons:</h5>
+                        <ul class="list-disc list-inside mb-4 text-gray-600">
+                            <li>Space Needle & Chihuly Garden and Glass.</li>
+                            <li>Pike Place Market: Watch fish-tossing and shop local.</li>
+                            <li>The Museum of Flight, one of the world's largest air and space museums.</li>
+                        </ul>
+                        <h5 class="font-bold mb-2">Embracing Nature:</h5>
+                        <ul class="list-disc list-inside text-gray-600">
+                           <li>Washington State Ferries to Bainbridge or San Juan Islands.</li>
+                           <li>Discovery Park for miles of urban trails.</li>
+                           <li>Kerry Park for the iconic skyline view with Mount Rainier.</li>
+                        </ul>
+                    `,
+                    culinary: "Seattle's food culture is defined by local, fresh ingredients. It's a global leader in coffee culture and a premier destination for Pacific Northwest seafood (salmon, Dungeness crab, oysters). The region also boasts a thriving craft brewery and distillery scene. Food tours of Pike Place Market are a popular activity.",
+                    logistics: `
+                        <p class="mb-2"><strong class="text-gray-800">Best Time to Visit:</strong> High season (Jun-Sep) for the best sunny weather, but also peak crowds. Shoulder seasons (Apr-May, Oct) offer a good balance.</p>
+                        <p class="mb-2"><strong class="text-gray-800">Avg. Costs (Mid-Range):</strong> Hotel ~$221/night. Daily total ~$172.50/person.</p>
+                        <p><strong class="text-gray-800">Getting Around:</strong> A robust system includes King County Metro buses, Sound Transit's Link light rail (connecting to the airport), and the iconic Washington State Ferries.</p>
+                    `,
+                }
+            },
+            costData: {
+                labels: ['New Orleans', 'Santa Fe', 'NYC', 'Seattle', 'Orlando'],
+                datasets: [
+                    { label: 'Hotel', data: [150, 175, 225, 221, 120], backgroundColor: '#a78bfa' },
+                    { label: 'Food & Transport', data: [48, 55, 66, 55.5, 70], backgroundColor: '#7c3aed' },
+                    { label: 'Attraction', data: [30, 25, 40, 38, 150], backgroundColor: '#5b21b6' }
+                ]
+            },
+            seasonalData: {
+                'Northeastern Metropolis': {
+                    Winter: 'Low Season. Cold, snow. Best prices, fewest crowds. Ideal for indoor culture (museums, theater).',
+                    Spring: 'Shoulder Season. Mild, pleasant weather. Blooming parks. Moderate crowds and prices. Excellent for walking.',
+                    Summer: 'High Season. Warm to hot. Large crowds, peak prices. Outdoor festivals and events.',
+                    Fall: 'Prime Shoulder Season. Crisp, cool weather, fall foliage. Moderate crowds. Ideal for exploring.'
+                },
+                'Southeastern Charm': {
+                    Winter: 'Shoulder Season. Mild, cool weather. Holiday decorations. Fewer crowds (except New Year\'s). Good value.',
+                    Spring: 'High Season. Pleasant, warm weather. Major festivals (Mardi Gras, Jazz Fest). Peak crowds and prices.',
+                    Summer: 'Low Season. Hot and humid. Lowest prices, fewest crowds. Best for indoor attractions and deals.',
+                    Fall: 'Prime Shoulder Season. Warm to mild weather. Fewer crowds post-summer. Excellent value and atmosphere.'
+                },
+                'Florida Entertainment': {
+                    Winter: 'High/Shoulder. Mild, pleasant weather attracts "snowbirds." Peak crowds around holidays, quieter in Jan/Feb.',
+                    Spring: 'High Season. Warm weather. Spring Break brings peak crowds and prices. Beaches are ideal.',
+                    Summer: 'High Season. Hot, humid, rainy. Peak family travel crowds due to school holidays.',
+                    Fall: 'Shoulder Season. Warm, less humid. Crowds decrease after summer. Good time for lower prices.'
+                },
+                'Southwestern Culture': {
+                    Winter: 'Low Season. Cold, potential for snow. Fewest crowds, lowest prices. Ideal for skiing and a quiet, cozy visit.',
+                    Spring: 'Shoulder Season. Mild and warming. Good for hiking before summer heat. Moderate costs and crowds.',
+                    Summer: 'High Season. Warm to hot, afternoon thunderstorms. Peak festival season. Highest crowds and prices.',
+                    Fall: 'Prime Season. Mild, sunny days, cool nights. Fall colors. Major events. Crowds thin after summer.'
+                },
+                'West Coast Hub': {
+                    Winter: 'Low Season. Cool, rainy. Fewest tourists, best hotel deals. Ideal for museums and cozy coffee shop culture.',
+                    Spring: 'Shoulder Season. Mild, improving weather with less rain. Cherry blossoms. Good value before summer peak.',
+                    Summer: 'High Season. Best weather: warm, sunny, dry. Peak tourist and cruise season. Highest prices and crowds.',
+                    Fall: 'Shoulder Season. Mild weather often continues into October. Crowds and prices drop significantly after Labor Day.'
+                }
+            },
+            personas: {
+                food: { 
+                    title: 'Food-Focused Traveler', 
+                    icon: '🍲',
+                    content: `This traveler prioritizes culinary experiences above all else.
+                    <br><br><strong>Top Destinations:</strong>
+                    <ul class='list-disc list-inside ml-4 mt-2'>
+                        <li><strong>New Orleans:</strong> For its deeply rooted and unique Creole and Cajun cuisine, iconic dishes, and innovative new restaurants.</li>
+                        <li><strong>New York City:</strong> For its unparalleled diversity, from street food to Michelin three-stars.</li>
+                        <li><strong>Santa Fe:</strong> For its nationally acclaimed and inventive New Mexican food scene.</li>
+                    </ul>`
+                },
+                family: { 
+                    title: 'Budget-Conscious Family',
+                    icon: '👨‍👩‍👧‍👦', 
+                    content: `This traveler seeks maximum family fun for the best value. While Orlando is the epicenter of family attractions, its high ticket prices can strain a budget.
+                    <br><br><strong>Strategic Destinations:</strong>
+                    <ul class='list-disc list-inside ml-4 mt-2'>
+                        <li><strong>St. Augustine:</strong> A high-value coastal vacation with a blend of beaches, quirky museums, and rich history.</li>
+                        <li><strong>Milwaukee:</strong> Offers an excellent zoo, numerous museums, and a family-friendly festival atmosphere at a lower cost than larger cities.</li>
+                    </ul>`
+                },
+                culture: { 
+                    title: 'Cultural Explorer',
+                    icon: '🏛️',
+                    content: `This traveler is in search of history, art, and immersive atmosphere.
+                     <br><br><strong>Top Destinations:</strong>
+                    <ul class='list-disc list-inside ml-4 mt-2'>
+                        <li><strong>Santa Fe:</strong> A living museum of art, Native American heritage, and Hispanic culture.</li>
+                        <li><strong>New Orleans:</strong> For its unique traditions in music, architecture, and celebration.</li>
+                        <li><strong>Charleston & Savannah:</strong> Consistently praised for their beautifully preserved historic districts and palpable sense of place.</li>
+                    </ul>`
+                },
+                adventure: { 
+                    title: 'Urban Adventurer',
+                    icon: '🏞️',
+                    content: `This traveler wants to combine the energy of a city with easy access to the great outdoors.
+                     <br><br><strong>Top Destinations:</strong>
+                    <ul class='list-disc list-inside ml-4 mt-2'>
+                        <li><strong>Seattle:</strong> Explore a vibrant downtown, then take a ferry to an island or drive to the mountains for a hike.</li>
+                        <li><strong>Taos & Santa Fe:</strong> Blend a world-class art scene with immediate access to high-desert hiking, mountain biking, and skiing.</li>
+                        <li><strong>Orlando:</strong> Offers surprising opportunities for kayaking in natural springs and airboat tours in the Everglades.</li>
+                    </ul>`
+                }
+            }
+        };
+
+        let visitorChart, costChart;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initVisitorChart();
+            initCostChart();
+            populateConnoisseurs();
+            populateSeasonalGrid();
+            populatePersonas();
+            setActiveLink(document.querySelector('.nav-link'));
+        });
+        
+        function getCityKeyByName(cityName) {
+            return Object.keys(appData.cities).find(key => appData.cities[key].name === cityName);
+        }
+
+        function initVisitorChart() {
+            const ctx = document.getElementById('visitorChart').getContext('2d');
+            const sortedCities = Object.entries(appData.cities)
+                .filter(([key, city]) => city.visitors)
+                .sort(([, a], [, b]) => a.visitors - b.visitors);
+
+            visitorChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedCities.map(([, city]) => city.name),
+                    datasets: [{
+                        label: 'International Visitor Arrivals (2023-2024)',
+                        data: sortedCities.map(([, city]) => city.visitors),
+                        backgroundColor: 'rgba(79, 70, 229, 0.8)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return value / 1e6 + 'M'; }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Top 10 U.S. Cities by International Arrivals', font: { size: 16 } },
+                         tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.raw.toLocaleString() + ' visitors';
+                                }
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const chartElement = elements[0];
+                            const cityName = visitorChart.data.labels[chartElement.index];
+                            const cityKey = getCityKeyByName(cityName);
+                            showCityProfile(cityKey);
+                        }
+                    }
+                }
+            });
+        }
+
+        function initCostChart() {
+            const ctx = document.getElementById('costChart').getContext('2d');
+            costChart = new Chart(ctx, {
+                type: 'bar',
+                data: appData.costData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { 
+                            stacked: true,
+                            ticks: { callback: function(value) { return '$' + value; } }
+                        }
+                    },
+                    plugins: {
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                footer: function(tooltipItems) {
+                                    let total = tooltipItems.reduce((sum, item) => sum + item.raw, 0);
+                                    return 'Total: $' + total.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function populateConnoisseurs() {
+            const container = document.querySelector('#connoisseurs-view .grid');
+            const connoisseurCities = ['santafe', 'chicago', 'neworleans', 'seattle'];
+            let html = '';
+            connoisseurCities.forEach(key => {
+                const city = appData.cities[key];
+                if (city) {
+                    html += `
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center cursor-pointer transition-transform transform hover:scale-105" onclick="showCityProfile('${key}')">
+                            <h4 class="text-xl font-bold text-indigo-600">${city.name}</h4>
+                            <p class="text-gray-500 mt-2">${city.accolade}</p>
+                        </div>
+                    `;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        function showCityProfile(cityKey) {
+            const city = appData.cities[cityKey];
+            if (!city || !city.identity) {
+                alert('Detailed profile for this city is not available yet.');
+                return;
+            }
+            const container = document.getElementById('city-profile-container');
+            container.innerHTML = `
+                <h3 class="text-3xl font-bold mb-2 text-gray-800">${city.name}</h3>
+                <div class="mb-6 border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                        <button onclick="switchTab(this, '${cityKey}', 'identity')" class="city-profile-tab active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm rounded-t-lg">Identity</button>
+                        <button onclick="switchTab(this, '${cityKey}', 'attractions')" class="city-profile-tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm rounded-t-lg">Attractions</button>
+                        <button onclick="switchTab(this, '${cityKey}', 'culinary')" class="city-profile-tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm rounded-t-lg">Culinary</button>
+                        <button onclick="switchTab(this, '${cityKey}', 'logistics')" class="city-profile-tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm rounded-t-lg">Logistics</button>
+                    </nav>
+                </div>
+                <div id="profile-content" class="text-gray-700 leading-relaxed fade-in">
+                    ${city.identity}
+                </div>
+            `;
+            container.classList.remove('hidden');
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function switchTab(button, cityKey, tabName) {
+            const city = appData.cities[cityKey];
+            document.querySelectorAll('.city-profile-tab').forEach(b => b.classList.remove('active'));
+            button.classList.add('active');
+            const contentDiv = document.getElementById('profile-content');
+            contentDiv.innerHTML = city[tabName];
+            contentDiv.classList.remove('fade-in');
+            void contentDiv.offsetWidth;
+            contentDiv.classList.add('fade-in');
+        }
+
+        function switchView(viewName) {
+            document.getElementById('titans-view').classList.toggle('hidden', viewName !== 'titans');
+            document.getElementById('connoisseurs-view').classList.toggle('hidden', viewName !== 'connoisseurs');
+            
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active', 'bg-indigo-600', 'text-white'));
+             document.querySelectorAll('.view-btn').forEach(btn => btn.classList.add('bg-white', 'text-gray-900'));
+
+            const activeBtn = document.querySelector(`.view-btn[onclick="switchView('${viewName}')"]`);
+            activeBtn.classList.add('active', 'bg-indigo-600', 'text-white');
+            activeBtn.classList.remove('bg-white', 'text-gray-900');
+        }
+
+        function populateSeasonalGrid() {
+            const grid = document.getElementById('seasonal-grid');
+            const seasons = ['Winter', 'Spring', 'Summer', 'Fall'];
+            const seasonColors = {
+                'Low Season': 'bg-green-100 text-green-800',
+                'Shoulder Season': 'bg-yellow-100 text-yellow-800',
+                'Prime Shoulder Season': 'bg-yellow-100 text-yellow-800',
+                'High Season': 'bg-red-100 text-red-800',
+                'High/Shoulder': 'bg-orange-100 text-orange-800',
+                'Prime Season': 'bg-yellow-100 text-yellow-800',
+            };
+            let html = '<div class="font-bold text-gray-700 self-center">City Archetype</div>' + seasons.map(s => `<div class="font-bold text-gray-700">${s}</div>`).join('');
+            
+            Object.entries(appData.seasonalData).forEach(([archetype, data]) => {
+                html += `<div class="font-medium text-gray-600 self-center p-2">${archetype}</div>`;
+                seasons.forEach(season => {
+                    const desc = data[season];
+                    const seasonType = desc.split('.')[0];
+                    const colorClass = seasonColors[seasonType] || 'bg-gray-100';
+                    html += `<div onclick="showSeasonalDetail('${archetype}', '${season}')" class="season-cell p-4 rounded-lg cursor-pointer transition ${colorClass}">${seasonType}</div>`;
+                });
+            });
+            grid.innerHTML = html;
+        }
+
+        function showSeasonalDetail(archetype, season) {
+            const detailsDiv = document.getElementById('seasonal-details');
+            const description = appData.seasonalData[archetype][season];
+            detailsDiv.innerHTML = `<strong class="font-bold">${archetype} - ${season}:</strong><br>${description}`;
+            detailsDiv.classList.remove('hidden');
+        }
+
+        function populatePersonas() {
+            const container = document.querySelector('#profiles .grid');
+            let html = '';
+            Object.entries(appData.personas).forEach(([key, persona]) => {
+                html += `
+                    <div onclick="showPersonaDetail('${key}')" class="p-6 bg-white rounded-lg shadow-md cursor-pointer transition-transform transform hover:scale-105">
+                        <div class="text-4xl mb-3">${persona.icon}</div>
+                        <h4 class="font-bold text-lg text-indigo-700">${persona.title}</h4>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function showPersonaDetail(personaKey) {
+            const persona = appData.personas[personaKey];
+            const container = document.getElementById('persona-details-container');
+            container.innerHTML = `
+                <div class="bg-indigo-50 p-6 rounded-lg fade-in">
+                    <h4 class="text-2xl font-bold text-indigo-800 mb-4">${persona.title}</h4>
+                    <p class="text-indigo-700 leading-relaxed">${persona.content}</p>
+                </div>
+            `;
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function setActiveLink(link) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        }
+
+    </script>
+</body>
+</html>

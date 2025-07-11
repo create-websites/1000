@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: The Rise of the Shri Ram Janmabhoomi Mandir</title>
+    <!-- Chosen Palette: Energetic & Playful -->
+    <!-- Application Structure Plan: A linear, top-to-bottom scrolling infographic. This narrative structure guides the user through a cohesive story: introduction with a hook, architectural details, a timeline of key events, data-driven impact on tourism and urban development, and a conclusion on the cultural renaissance. This is more effective for storytelling than a tabbed or dashboard layout. -->
+    <!-- Visualization & Content Choices: Tourist Footfall -> Goal: Compare -> Bar Chart (Chart.js) to show dramatic growth. Ayodhya Master Plan -> Goal: Compare (Composition) -> Donut Chart (Chart.js) to show investment breakdown. Key Architectural/Construction Facts -> Goal: Inform -> Big Number Callouts. Sacred Rites Timeline -> Goal: Change -> HTML/CSS Timeline. Nagara Style -> Goal: Organize -> HTML/CSS Diagram. All choices adhere to the NO SVG/Mermaid constraint. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0F172A;
+            color: #F8FAFC;
+            font-family: 'Inter', sans-serif;
+        }
+        .font-display {
+            font-family: 'Teko', sans-serif;
+            letter-spacing: 0.05em;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center my-12 md:my-16">
+            <h1 class="text-5xl md:text-7xl font-display font-bold text-amber-400">SHRI RAM JANMABHOOMI MANDIR</h1>
+            <p class="mt-4 text-xl md:text-2xl text-slate-300">A Monumental Confluence of Faith, Engineering, and Transformation</p>
+        </header>
+
+        <section class="my-16 md:my-24">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-orange-500 mb-12">ARCHITECTURAL GRANDEUR</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                    <p class="font-display text-7xl font-bold text-white">161<span class="text-4xl text-amber-400">ft</span></p>
+                    <p class="mt-2 text-xl font-semibold text-slate-300">Peak Height</p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                    <p class="font-display text-7xl font-bold text-white">392</p>
+                    <p class="mt-2 text-xl font-semibold text-slate-300">Intricately Carved Pillars</p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                    <p class="font-display text-7xl font-bold text-white">1000<span class="text-4xl text-amber-400">+</span></p>
+                    <p class="mt-2 text-xl font-semibold text-slate-300">Year Lifespan (No Iron Used)</p>
+                </div>
+            </div>
+             <div class="mt-12 bg-slate-800 p-6 md:p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center text-white mb-6">Built in the Traditional Nagara Style</h3>
+                <p class="text-center text-slate-400 mb-8 max-w-2xl mx-auto">This ancient North Indian architectural form uses specific elements to symbolize the cosmos. The temple's structure is a spiritual journey in stone, from the base to the heavens.</p>
+                <div class="flex flex-col md:flex-row justify-center items-center gap-4 text-center">
+                    <div class="p-4 bg-slate-700 rounded-lg border-2 border-amber-400 w-full md:w-auto">
+                        <p class="font-bold text-amber-400">SHIKHARA</p>
+                        <p class="text-sm text-slate-300">(Tower representing Mt. Meru)</p>
+                    </div>
+                    <div class="text-2xl font-bold text-orange-500 hidden md:block">→</div>
+                     <div class="p-4 bg-slate-700 rounded-lg w-full md:w-auto">
+                        <p class="font-bold text-white">MANDAPAS</p>
+                        <p class="text-sm text-slate-300">(5 Pillared Assembly Halls)</p>
+                    </div>
+                     <div class="text-2xl font-bold text-orange-500 hidden md:block">→</div>
+                    <div class="p-4 bg-slate-700 rounded-lg w-full md:w-auto">
+                        <p class="font-bold text-white">GARBHAGRIHA</p>
+                        <p class="text-sm text-slate-300">(Sanctum with Deity)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-slate-700 my-16 md:my-24">
+
+        <section class="my-16 md:my-24">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-orange-500 mb-12">A SACRED TIMELINE</h2>
+            <div class="relative">
+                <div class="border-l-4 border-amber-400 absolute h-full top-0 left-1/2 -ml-0.5 md:left-1/2"></div>
+                <div class="mb-12">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="w-full md:w-1/2 md:pr-8 md:text-right">
+                             <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                                <p class="font-display text-3xl font-bold text-amber-400">AUGUST 5, 2020</p>
+                                <h3 class="text-xl font-bold text-white mt-2">Bhumi Pujan</h3>
+                                <p class="text-slate-300 mt-2">The foundational ritual to honor Mother Earth, unifying sacred soil and water from across India to sanctify the ground and begin construction.</p>
+                            </div>
+                        </div>
+                         <div class="w-full md:w-1/2 md:pl-8 mt-4 md:mt-0"></div>
+                    </div>
+                </div>
+                <div class="mb-12">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="w-full md:w-1/2 md:pr-8 order-1 md:order-2 md:text-left md:pl-8">
+                            <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                                <p class="font-display text-3xl font-bold text-amber-400">JANUARY 22, 2024</p>
+                                <h3 class="text-xl font-bold text-white mt-2">Pran Pratishtha</h3>
+                                <p class="text-slate-300 mt-2">The sacred consecration ceremony that infused the idol with divine life force, transforming the stone structure into a living abode of God.</p>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2 order-2 md:order-1 md:pr-8"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-slate-700 my-16 md:my-24">
+
+        <section class="my-16 md:my-24">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-orange-500 mb-4">THE PILGRIM SURGE</h2>
+            <p class="text-center text-slate-300 text-lg max-w-3xl mx-auto mb-12">The temple's inauguration triggered an unprecedented wave of tourism, transforming Ayodhya into India's foremost spiritual destination almost overnight.</p>
+            <div class="bg-slate-800 p-6 md:p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center text-white mb-2">Visitor Growth: 2022 vs. 2024</h3>
+                <p class="text-center text-slate-400 mb-8">This chart compares the total visitors for the entire year of 2022 against the numbers for just the first nine months of 2024, highlighting the exponential increase.</p>
+                <div class="chart-container">
+                    <canvas id="tourismChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <hr class="border-slate-700 my-16 md:my-24">
+
+        <section class="my-16 md:my-24">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-orange-500 mb-4">REIMAGINING A GLOBAL CITY</h2>
+            <p class="text-center text-slate-300 text-lg max-w-3xl mx-auto mb-12">The temple has catalyzed a massive urban transformation, with over ₹85,000 Crore invested in the Ayodhya Master Plan to build a world-class spiritual metropolis.</p>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div class="bg-slate-800 p-6 md:p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-center text-white mb-2">Master Plan Investment Focus</h3>
+                    <p class="text-center text-slate-400 mb-8">A significant portion of the development fund is allocated to creating robust infrastructure and enhancing the pilgrim experience.</p>
+                    <div class="chart-container" style="height: 300px; max-height: 350px;">
+                        <canvas id="investmentChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-slate-800 p-6 md:p-8 rounded-lg shadow-lg flex flex-col justify-center">
+                    <h3 class="text-2xl font-bold text-center text-white mb-8">Key Infrastructure Projects</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="text-4xl text-amber-400">✈️</div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white">Maharishi Valmiki Int'l Airport</h4>
+                                <p class="text-slate-300">A new gateway with architecture mirroring the temple. Cost: >₹1,450 Crore.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-4xl text-amber-400">🚂</div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white">Ayodhya Dham Railway Station</h4>
+                                <p class="text-slate-300">A redeveloped, modern hub for rail connectivity. Cost: >₹240 Crore.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                             <div class="text-4xl text-amber-400">🛣️</div>
+                            <div>
+                                <h4 class="font-bold text-xl text-white">Thematic Roadways</h4>
+                                <p class="text-slate-300">Four major paths (Rampath, Bhaktipath etc.) widened and beautified for pilgrim access.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <hr class="border-slate-700 my-16 md:my-24">
+
+        <section class="my-16 md:my-24 text-center">
+            <h2 class="text-4xl md:text-5xl font-display text-center text-orange-500 mb-4">EPICENTER OF A CULTURAL RENAISSANCE</h2>
+             <p class="text-center text-slate-300 text-lg max-w-3xl mx-auto mb-12">The temple acts as a cultural engine, amplifying traditional festivals and sparking renewed interest in arts and scholarship on a national and global scale.</p>
+             <div class="flex flex-wrap justify-center gap-6">
+                <div class="bg-orange-500 text-white font-bold py-2 px-5 rounded-full text-lg shadow-lg">DEEPOTSAV FESTIVAL</div>
+                <div class="bg-blue-600 text-white font-bold py-2 px-5 rounded-full text-lg shadow-lg">RAM NAVAMI CELEBRATIONS</div>
+                <div class="bg-amber-400 text-slate-900 font-bold py-2 px-5 rounded-full text-lg shadow-lg">REVIVAL OF RAMLILA</div>
+                <div class="bg-slate-300 text-slate-900 font-bold py-2 px-5 rounded-full text-lg shadow-lg">VIBRANT PARIKRAMAS</div>
+             </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const commonTooltipOptions = {
+                plugins: {
+                    tooltip: {
+                        backgroundColor: '#1E293B',
+                        titleColor: '#FBBF24',
+                        bodyColor: '#F8FAFC',
+                        titleFont: { size: 16, weight: 'bold', family: 'Inter' },
+                        bodyFont: { size: 14, family: 'Inter' },
+                        padding: 12,
+                        cornerRadius: 4,
+                        displayColors: false,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            };
+            
+            const tourismCtx = document.getElementById('tourismChart').getContext('2d');
+            new Chart(tourismCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Full Year 2022', ['First 9 Months', 'of 2024']],
+                    datasets: [{
+                        label: 'Total Visitors',
+                        data: [20.3, 135.5],
+                        backgroundColor: ['#1D4ED8', '#F97316'],
+                        borderColor: ['#3B82F6', '#FB923C'],
+                        borderWidth: 2,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { 
+                                color: '#94A3B8',
+                                font: { size: 12 },
+                                callback: function(value) { return value + 'M' }
+                            },
+                             title: {
+                                display: true,
+                                text: 'Visitors in Millions',
+                                color: '#CBD5E1'
+                            }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: '#F8FAFC', font: { size: 14, weight: 'bold' } }
+                        }
+                    },
+                    plugins: { ...commonTooltipOptions.plugins, legend: { display: false } }
+                }
+            });
+
+            const investmentCtx = document.getElementById('investmentChart').getContext('2d');
+            new Chart(investmentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Infrastructure', 'Hospitality Dev.', 'Cultural Projects', 'Green Belt', 'Other'],
+                    datasets: [{
+                        label: 'Investment Focus',
+                        data: [40, 25, 15, 10, 10],
+                        backgroundColor: ['#F97316', '#FBBF24', '#3B82F6', '#10B981', '#64748B'],
+                        borderColor: '#0F172A',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        ...commonTooltipOptions.plugins,
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#F8FAFC',
+                                font: { size: 12 },
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

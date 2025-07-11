@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australia: An Interactive Tourism Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Ocean Blue -->
+    <!-- Application Structure Plan: The SPA is structured as an interactive dashboard and discovery tool. It starts with a "National Snapshot" to provide macro context on Australia's powerful tourism recovery using dynamic charts. The core is the "Explore Destinations" section, a filterable grid of cards for cities and natural wonders. Clicking a card dynamically loads a detailed profile with a tabbed interface (Identity, Attractions, Culinary, Best Time to Visit) to manage information effectively. This non-linear design allows users to compare destinations based on interest rather than a fixed report order. It flows into a dedicated "Strategic Travel Planning" section, featuring a comprehensive seasonal matrix and traveler personas for actionable advice. -->
+    <!-- Visualization & Content Choices: 
+    - Tourism Recovery: Report Info -> Visitor & Expenditure data 2019-2024. Goal -> Show Change. Viz -> Dual-axis Line & Bar Chart (Chart.js). Interaction -> Hover for details. Justification -> Effectively shows the powerful divergence of value vs. volume.
+    - International Markets: Report Info -> Arrivals & Spend by country. Goal -> Compare Composition. Viz -> Grouped Donut Charts (Chart.js). Interaction -> Hover for data. Justification -> Clearly compares the volume vs. value story for key markets like China and NZ.
+    - Destination Cards: Report Info -> List of key destinations. Goal -> Organize/Navigate. Viz -> Interactive Cards (HTML/Tailwind). Interaction -> Click to load profile, filter by type (City/Nature). Justification -> A visually engaging and intuitive hub for exploration.
+    - Destination Profiles: Report Info -> Detailed descriptions. Goal -> Inform/Organize. Viz -> Tabbed Content Area (HTML/JS). Interaction -> Click tabs. Justification -> The best way to present dense, multi-faceted information without overwhelming the user. A "Best Time to Visit" tab is explicitly added to meet user requirements.
+    - Seasonal Guide: Report Info -> Climate data and best travel times. Goal -> Inform/Plan. Viz -> Detailed HTML Table/Matrix. Interaction -> Static reference. Justification -> A clear, scannable format for complex seasonal information.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #fdfcfb; color: #333; }
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 400px; max-height: 50vh; }
+        .donut-chart-container { position: relative; width: 100%; max-width: 300px; margin: auto; height: 300px; max-height: 300px; }
+        .nav-link { transition: color 0.3s, border-color 0.3s; }
+        .nav-link.active { color: #0077b6; border-bottom-color: #0077b6; }
+        .profile-tab.active { background-color: #023e8a; color: #ffffff; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .filter-btn.active { background-color: #0077b6; color: white; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="bg-[#fdfcfb]/90 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-[#023e8a]">Explore Australia</h1>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#snapshot" class="nav-link text-gray-600 hover:text-blue-700 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Snapshot</a>
+                <a href="#destinations" class="nav-link text-gray-600 hover:text-blue-700 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Destinations</a>
+                <a href="#planning" class="nav-link text-gray-600 hover:text-blue-700 border-b-2 border-transparent pb-1" onclick="setActiveLink(this)">Plan Your Trip</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="intro" class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-800">An Interactive Guide to Australian Tourism</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600">
+                This experience transforms a comprehensive tourism report into a dynamic travel planning tool. Discover Australia's iconic cities and natural wonders, compare travel data, and find the perfect time to visit any part of this vast continent.
+            </p>
+        </section>
+
+        <section id="snapshot" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Australia's Tourism Snapshot</h3>
+                <p class="text-gray-600 max-w-3xl mx-auto">This section provides a high-level overview of Australia's visitor economy, highlighting its powerful post-pandemic recovery. Note the significant trend: while visitor numbers have returned to pre-pandemic levels, expenditure has soared, indicating a shift towards higher-value tourism.</p>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg mb-12">
+                <h4 class="text-2xl font-bold text-center mb-6">Tourism Recovery: Arrivals vs. Expenditure</h4>
+                <div class="chart-container">
+                    <canvas id="recoveryChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                <h4 class="text-2xl font-bold text-center mb-8">Key International Markets (Year Ending March 2025)</h4>
+                <p class="text-center text-gray-500 mb-6 max-w-2xl mx-auto">This comparison reveals the difference between visitor volume and visitor value. While New Zealand provides the most visitors, China delivers the highest economic impact.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h5 class="text-lg font-semibold text-center mb-4">Top 5 by Visitor Arrivals</h5>
+                        <div class="donut-chart-container">
+                             <canvas id="arrivalsChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 class="text-lg font-semibold text-center mb-4">Top 5 by Visitor Spend (AUD)</h5>
+                        <div class="donut-chart-container">
+                             <canvas id="spendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="destinations" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Explore Destinations</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto">From iconic cities to World Heritage wilderness, Australia's destinations are vast and varied. Use the filters to navigate the options and click on any card to dive into a detailed profile, including the best time to visit.</p>
+                 <div id="filter-container" class="mt-6 inline-flex rounded-md shadow-sm">
+                    <button onclick="filterDestinations('all')" class="filter-btn active px-4 py-2 text-sm font-medium border border-gray-200 rounded-l-lg hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500">All</button>
+                    <button onclick="filterDestinations('city')" class="filter-btn px-4 py-2 text-sm font-medium border-t border-b border-gray-200 hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500">Major Cities</button>
+                    <button onclick="filterDestinations('nature')" class="filter-btn px-4 py-2 text-sm font-medium border-gray-200 rounded-r-lg hover:bg-blue-600 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-500">Natural Wonders</button>
+                </div>
+            </div>
+            
+            <div id="destination-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+
+            <div id="profile-container" class="mt-16 bg-white rounded-xl shadow-lg p-6 md:p-8 hidden fade-in">
+            </div>
+        </section>
+
+        <section id="planning" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-3">Strategic Travel Planning</h3>
+                 <p class="text-gray-600 max-w-3xl mx-auto">Planning a trip to a continent requires understanding its diverse climates. This guide breaks down the optimal travel times for Australia's major cities, helping you match your travel dates with the best possible weather and experiences.</p>
+            </div>
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg overflow-x-auto">
+                <h4 class="text-2xl font-bold text-center mb-6">Best Time to Visit - A Seasonal Guide</h4>
+                <table id="seasonal-table" class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">City</th>
+                            <th scope="col" class="px-6 py-3">Best Months</th>
+                            <th scope="col" class="px-6 py-3">Weather</th>
+                            <th scope="col" class="px-6 py-3">Crowds</th>
+                            <th scope="col" class="px-6 py-3">Key Events</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+    <footer class="bg-gray-800 text-white text-center p-6 mt-12">
+        <p class="mb-2">Data synthesized from "Australia's Visitor Economy" report. App designed for interactive exploration.</p>
+        <p class="text-sm text-gray-400"><strong>Major Australian Cities:</strong> Sydney, Melbourne, Brisbane, Perth, Adelaide, Canberra, Hobart, Darwin, Gold Coast, Cairns</p>
+    </footer>
+
+    <script>
+        const appData = {
+            destinations: {
+                sydney: { name: "Sydney, NSW", type: "city", tagline: "The Global Harbour City", content: {
+                    identity: "Sydney stands as Australia's premier gateway and its most visited city. Its global appeal is built on the stunning juxtaposition of iconic, man-made landmarks like the Opera House and Harbour Bridge against the backdrop of one of the world's most beautiful natural harbours, complemented by a string of famous beaches.",
+                    attractions: `<ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><b>Sydney Opera House & Harbour Bridge:</b> Explore the iconic landmarks with tours, climbs, or a simple ferry ride for stunning views.</li>
+                            <li><b>Bondi to Coogee Walk:</b> A famous 6km coastal trail linking several of Sydney's most beautiful eastern beaches.</li>
+                            <li><b>The Rocks & Circular Quay:</b> Discover colonial history in the cobblestone lanes of The Rocks and enjoy the bustling hub of Circular Quay.</li>
+                            <li><b>Taronga Zoo & Royal Botanic Garden:</b> Encounter native wildlife with incredible city views or find an oasis of tranquility in the heart of the city.</li>
+                        </ul>`,
+                    culinary: "Sydney's dining scene reflects its multicultural fabric. Signature experiences include the Instagram-famous Strawberry Watermelon Cake from Black Star Pastry, fresh seafood at the Fish Market, and exploring the diverse food precincts of Chinatown, Barangaroo, and the inner-west for authentic global cuisine.",
+                    timing: "The shoulder seasons of <strong>October-November</strong> and <strong>March-April</strong> are ideal, offering warm, sunny weather with moderate crowds and prices. Summer (Dec-Feb) is hot and busy, while winter (Jun-Aug) is mild but can be cool."
+                }},
+                melbourne: { name: "Melbourne, VIC", type: "city", tagline: "The Capital of Culture & Coffee", content: {
+                    identity: "Melbourne positions itself as Australia's capital of culture, sport, and cuisine. Its identity is deeply intertwined with its vibrant arts scene, world-class coffee, a unique urban geography defined by a labyrinth of street-art-adorned laneways, and a passion for sport, hosting events like the Australian Open.",
+                    attractions: `<ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><b>Laneway Exploration:</b> Get lost in alleys like Degraves Street and Hosier Lane to discover hidden cafes, street art, and boutiques.</li>
+                            <li><b>Queen Victoria Market:</b> A bustling, historic market offering a vast array of fresh produce and gourmet foods.</li>
+                            <li><b>National Gallery of Victoria (NGV):</b> Australia's oldest and most visited art museum, with a vast international collection.</li>
+                            <li><b>Great Ocean Road Day Trip:</b> One of the world's most scenic coastal drives, featuring the iconic Twelve Apostles rock formations.</li>
+                        </ul>`,
+                    culinary: "Melbourne is a global benchmark for coffee and brunch culture. A local signature is the 'Magic' coffee. The city's food scene is incredibly diverse, from the historic Italian precinct of Lygon Street to the Vietnamese hub of Victoria Street in Richmond. Don't miss the unique South Melbourne Market Dim Sim.",
+                    timing: "The shoulder seasons of <strong>March-May</strong> and <strong>September-November</strong> are perfect. The weather is mild and pleasant, ideal for exploring the city's laneways. These periods avoid the peak heat of summer and the chill of winter."
+                }},
+                cairns: { name: "Cairns, QLD", type: "nature", tagline: "Gateway to Two World Wonders", content: {
+                    identity: "Cairns is a relaxed, tropical city that serves as the primary gateway to two UNESCO World Heritage sites: the Great Barrier Reef and the Daintree Rainforest. Its identity is inextricably linked to the unparalleled access it provides to these spectacular natural attractions.",
+                    attractions: `<ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><b>Great Barrier Reef:</b> Take a cruise to the outer reef for snorkeling or diving in the world's largest coral reef system.</li>
+                            <li><b>Daintree Rainforest:</b> Explore the world's oldest tropical rainforest via a river cruise (spotting crocodiles) and guided walks.</li>
+                            <li><b>Kuranda Scenic Railway & Skyrail:</b> Combine a historic train journey with a cableway that glides over the rainforest canopy for breathtaking views.</li>
+                            <li><b>Atherton Tablelands:</b> Discover a cooler, greener hinterland of waterfalls, rolling hills, and artisanal food producers.</li>
+                        </ul>`,
+                    culinary: "The culinary scene is defined by its tropical location. Expect fresh seafood, particularly prawns and barramundi, and an abundance of exotic fruits like mangoes, papayas, and lychees. Dining is casual, with a focus on alfresco settings along the Esplanade.",
+                    timing: "The dry season, from <strong>April to September</strong>, is the ideal time to visit. This period brings warm, sunny days, low humidity, and clear blue skies, perfect for reef and rainforest exploration. Avoid the wet season (Oct-Mar) due to heat, humidity, and rain."
+                }},
+                perth: { name: "Perth, WA", type: "city", tagline: "Urban Oasis & Coastal Playground", content: {
+                    identity: "Perth blends a relaxed, sun-drenched lifestyle with sophisticated urban amenities. It's defined by stunning natural assets, including the expansive Kings Park, a series of pristine white-sand beaches along its 'Sunset Coast,' and its role as the gateway to Rottnest Island and the Margaret River wine region.",
+                    attractions: `<ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><b>Kings Park & Botanic Garden:</b> One of the world's largest inner-city parks, offering native bushland and sweeping city views.</li>
+                            <li><b>Rottnest Island:</b> Take a ferry to this protected nature reserve to meet the famously friendly quokkas and snorkel in turquoise bays.</li>
+                            <li><b>Cottesloe Beach:</b> Perth's iconic beach, perfect for swimming, picnics, and watching the sunset over the Indian Ocean.</li>
+                            <li><b>Fremantle:</b> Explore the historic port city's Victorian architecture, lively markets, and craft breweries.</li>
+                        </ul>`,
+                    culinary: "Perth's food scene is booming, with a focus on fresh, local produce. A key culinary experience is visiting the nearby <strong>Swan Valley</strong>, WA's oldest wine region, for wine tastings and artisanal food. Fremantle is another hub for great food and craft beer.",
+                    timing: "The shoulder season of spring (<strong>September to November</strong>) is spectacular, as it coincides with the famous wildflower season across Western Australia. Autumn (March-May) is also very pleasant. Summer is hot and dry, while winter is mild and can be wet."
+                }},
+                adelaide: { name: "Adelaide, SA", type: "city", tagline: "Epicurean Hub & Wildlife Gateway", content: {
+                    identity: "Adelaide is a gracefully designed city celebrated for its vibrant food and wine culture and its position as the gateway to acclaimed wine regions like the Barossa Valley and the unique wildlife sanctuary of Kangaroo Island. It's often called a '20-minute city' for its ease of access.",
+                    attractions: `<ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><b>Barossa Valley:</b> Take a day tour to Australia's most famous wine region, renowned for its powerful Shiraz.</li>
+                            <li><b>Kangaroo Island:</b> A 'zoo without fences,' offering encounters with sea lions, koalas, and kangaroos in their natural habitat.</li>
+                            <li><b>Adelaide Central Market:</b> A bustling hub of multicultural cuisine and one of the largest fresh produce markets in the Southern Hemisphere.</li>
+                            <li><b>Adelaide Hills:</b> Explore charming historic villages like Hahndorf, Australia's oldest German settlement.</li>
+                        </ul>`,
+                    culinary: "Adelaide is a food and wine lover's paradise. The Central Market is the heart of its food scene. The city provides the perfect base for exploring world-class wine regions, including the Barossa, Clare Valley, and McLaren Vale, making wine tasting a signature activity.",
+                    timing: "The best time to visit is during autumn (<strong>March to May</strong>). The weather is warm and dry, and it's a bustling period of food and wine festivals, including the Barossa Vintage Festival. Spring (Sep-Nov) is also very pleasant."
+                }},
+                hobart: { name: "Hobart, TAS", type: "city", tagline: "Where History Meets Wilderness", content: {
+                    identity: "Australia's second-oldest capital, Hobart offers a compelling mix of colonial history, a world-class contemporary art scene, and unparalleled access to the rugged Tasmanian Wilderness World Heritage Area. Its picturesque setting on the Derwent River gives it a unique, intimate character.",
+                    attractions: `<ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><b>MONA (Museum of Old and New Art):</b> A world-renowned, subterranean museum known for its thought-provoking and controversial art.</li>
+                            <li><b>Salamanca Market:</b> A vibrant Saturday market showcasing Tasmania's finest artisans, designers, and food producers.</li>
+                            <li><b>kunanyi / Mount Wellington:</b> The mountain provides a dramatic backdrop and spectacular views.</li>
+                            <li><b>Port Arthur Historic Site:</b> A poignant and comprehensive look into Australia's convict past, easily accessible as a day trip.</li>
+                        </ul>`,
+                    culinary: "Tasmania's reputation for premium produce is central to Hobart's scene. The focus is on fresh seafood (oysters, salmon), cool-climate wines, and high-quality whisky and craft beer. A visit to a local distillery or winery is a must.",
+                    timing: "The summer months (<strong>December to February</strong>) offer the best weather—mild, sunny, and perfect for exploring. This is the peak season. Winter (Jun-Aug) is cold but offers the unique Dark Mofo festival and a chance to see the Aurora Australis."
+                }},
+                uluru: { name: "Uluru, NT", type: "nature", tagline: "The Spiritual Heart of Australia", content: {
+                    identity: "Located in the arid Red Centre, Uluru-Kata Tjuta National Park is a dual UNESCO World Heritage site, recognized for both its natural majesty and its profound cultural significance to the Aṉangu, the traditional owners. A visit here is an immersive cultural and spiritual experience.",
+                    attractions: `<ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><b>Sunrise & Sunset Viewing:</b> Witness the dramatic play of light and color across the rock's surface from dedicated viewing areas.</li>
+                            <li><b>Cultural Immersion:</b> Visit the Cultural Centre and take a guided walk around the base of Uluru with an Aṉangu guide.</li>
+                            <li><b>Field of Light Installation:</b> A magical, critically acclaimed art installation of 50,000 solar-powered spheres.</li>
+                            <li><b>Dining Under the Stars:</b> Experience unique dinners like 'Sounds of Silence' with desert landscapes and unparalleled stargazing.</li>
+                        </ul>`,
+                    culinary: "Dining is a unique experience focused on native bush tucker ingredients. Experiences often combine gourmet food with cultural storytelling, didgeridoo performances, and astronomy talks that decode the stunning southern night sky.",
+                    timing: "The best time to visit is during the cooler, dry season months from <strong>May to September</strong>. The days are mild and pleasant for hiking, and the nights are cool and clear, perfect for stargazing. Avoid the summer months (Dec-Feb) due to extreme heat."
+                }},
+            }
+        };
+
+        let recoveryChart, arrivalsChart, spendChart;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initRecoveryChart();
+            initMarketCharts();
+            populateDestinations('all');
+            populateSeasonalTable();
+            setActiveLink(document.querySelector('.nav-link'));
+        });
+
+        function setActiveLink(link) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        }
+
+        function initRecoveryChart() {
+            const ctx = document.getElementById('recoveryChart').getContext('2d');
+            recoveryChart = new Chart(ctx, {
+                data: {
+                    labels: ['2019', '2022', '2023', '2024'],
+                    datasets: [{
+                        type: 'bar',
+                        label: 'Total Expenditure (AUD $B)',
+                        data: [126.07, 111.63, 152.60, 159.17],
+                        backgroundColor: 'rgba(0, 119, 182, 0.6)',
+                        yAxisID: 'y1',
+                    }, {
+                        type: 'line',
+                        label: 'Total Visitors (Millions)',
+                        data: [126.12, 111.63, 122.80, 126.79],
+                        borderColor: '#023e8a',
+                        backgroundColor: '#023e8a',
+                        tension: 0.3,
+                        yAxisID: 'y',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Visitors (Millions)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Expenditure (AUD $B)' }
+                        }
+                    },
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        }
+
+        function initMarketCharts() {
+            const arrivalsCtx = document.getElementById('arrivalsChart').getContext('2d');
+            arrivalsChart = new Chart(arrivalsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['New Zealand', 'China', 'USA', 'UK', 'India'],
+                    datasets: [{ data: [1.2, 0.86, 0.67, 0.61, 0.42], backgroundColor: ['#0077b6', '#00b4d8', '#90e0ef', '#caf0f8', '#ade8f4'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Arrivals (Millions)' } } }
+            });
+
+            const spendCtx = document.getElementById('spendChart').getContext('2d');
+            spendChart = new Chart(spendCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['China', 'UK', 'USA', 'New Zealand', 'India'],
+                    datasets: [{ data: [9.2, 2.4, 2.3, 2.2, 1.8], backgroundColor: ['#0077b6', '#00b4d8', '#90e0ef', '#caf0f8', '#ade8f4'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Spend (AUD $B)' } } }
+            });
+        }
+
+        function populateDestinations(filter) {
+            const grid = document.getElementById('destination-grid');
+            grid.innerHTML = '';
+            Object.entries(appData.destinations).forEach(([key, dest]) => {
+                if (filter === 'all' || dest.type === filter) {
+                    const card = document.createElement('div');
+                    card.className = `bg-white rounded-lg shadow-md p-6 text-center cursor-pointer transition-transform transform hover:scale-105 fade-in`;
+                    card.setAttribute('onclick', `showProfile('${key}')`);
+                    card.innerHTML = `
+                        <h4 class="text-xl font-bold text-blue-800">${dest.name}</h4>
+                        <p class="text-gray-500 mt-2">${dest.tagline}</p>
+                    `;
+                    grid.appendChild(card);
+                }
+            });
+        }
+
+        function filterDestinations(filter) {
+            populateDestinations(filter);
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.filter-btn[onclick="filterDestinations('${filter}')"]`).classList.add('active');
+        }
+
+        function showProfile(destKey) {
+            const dest = appData.destinations[destKey];
+            if (!dest) return;
+            const container = document.getElementById('profile-container');
+            container.innerHTML = `
+                <h3 class="text-3xl font-bold mb-2 text-gray-800">${dest.name}</h3>
+                <div class="mb-6 border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-2 md:space-x-6 overflow-x-auto" aria-label="Tabs">
+                        <button onclick="switchTab(this, '${destKey}', 'identity')" class="profile-tab active whitespace-nowrap py-3 px-2 md:px-3 border-b-2 font-medium text-sm rounded-t-lg">Identity</button>
+                        <button onclick="switchTab(this, '${destKey}', 'attractions')" class="profile-tab whitespace-nowrap py-3 px-2 md:px-3 border-b-2 font-medium text-sm rounded-t-lg">Attractions</button>
+                        <button onclick="switchTab(this, '${destKey}', 'culinary')" class="profile-tab whitespace-nowrap py-3 px-2 md:px-3 border-b-2 font-medium text-sm rounded-t-lg">Culinary</button>
+                        <button onclick="switchTab(this, '${destKey}', 'timing')" class="profile-tab whitespace-nowrap py-3 px-2 md:px-3 border-b-2 font-medium text-sm rounded-t-lg">Best Time to Visit</button>
+                    </nav>
+                </div>
+                <div id="profile-content" class="text-gray-700 leading-relaxed fade-in">
+                    ${dest.content.identity}
+                </div>
+            `;
+            container.classList.remove('hidden');
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function switchTab(button, destKey, tabName) {
+            const dest = appData.destinations[destKey];
+            if (!dest.content[tabName]) return;
+            document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
+            button.classList.add('active');
+            const contentDiv = document.getElementById('profile-content');
+            contentDiv.innerHTML = dest.content[tabName];
+            contentDiv.classList.remove('fade-in');
+            void contentDiv.offsetWidth;
+            contentDiv.classList.add('fade-in');
+        }
+
+        function populateSeasonalTable() {
+            const tableBody = document.querySelector('#seasonal-table tbody');
+            const seasonalData = [
+                { city: 'Sydney', months: 'Oct–Nov, Mar–Apr', weather: 'Warm & Sunny', crowds: 'Moderate', events: 'Vivid Sydney (May-Jun), NYE' },
+                { city: 'Melbourne', months: 'Mar–May, Sep–Nov', weather: 'Mild & Pleasant', crowds: 'Moderate', events: 'Australian Open (Jan), F1 (Mar)' },
+                { city: 'Cairns', months: 'Apr–Sep', weather: 'Warm & Dry', crowds: 'High', events: 'Cairns Indigenous Art Fair (Jul)' },
+                { city: 'Perth', months: 'Sep–Nov', weather: 'Warm & Sunny', crowds: 'Moderate', events: 'Wildflower Season' },
+                { city: 'Adelaide', months: 'Mar–May', weather: 'Warm & Dry', crowds: 'Moderate', events: 'Adelaide Fringe (Feb-Mar)' },
+                { city: 'Hobart', months: 'Dec–Feb', weather: 'Mild & Sunny', crowds: 'High', events: 'Taste of Summer, Dark Mofo (Jun)' },
+                { city: 'Brisbane', months: 'Apr-Jun, Sep-Nov', weather: 'Warm & Dry', crowds: 'Moderate', events: 'Brisbane Festival (Sep)' },
+                { city: 'Uluru', months: 'May–Sep', weather: 'Mild Days, Cold Nights', crowds: 'High', events: 'Clear skies for stargazing' },
+            ];
+            seasonalData.forEach(item => {
+                const row = `
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${item.city}</th>
+                        <td class="px-6 py-4">${item.months}</td>
+                        <td class="px-6 py-4">${item.weather}</td>
+                        <td class="px-6 py-4">${item.crowds}</td>
+                        <td class="px-6 py-4">${item.events}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+    </script>
+</body>
+</html>

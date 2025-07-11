@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: The Qutub Minar - A Monumental History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Modern Slate & Steel -->
+    <!-- Application Structure Plan: The infographic follows a top-down narrative structure to tell a complete story. It begins with a 'Hook' using large, impactful numbers to grab attention. It then flows chronologically with a 'Timeline' of its construction. The 'Architectural Breakdown' section logically follows, deconstructing the monument itself. The narrative then zooms out to the surrounding 'Complex' to provide context. It moves into the 'Modern Era' with data-driven charts on tourism and conservation, bringing the story to the present day. This linear, scrolling narrative is the most effective way to present a historical report as an infographic, guiding the user through a clear and compelling story from past to present. -->
+    <!-- Visualization & Content Choices:
+        - Key Dimensions (Height, Steps, etc.) -> Goal: Inform -> Viz: Single Big Numbers. Justification: Provides immediate, high-impact information to establish scale. Method: HTML/JS.
+        - Construction Phases -> Goal: Show Change -> Viz: HTML/CSS Timeline. Justification: Clearly visualizes the multi-dynastic construction process over time in a narrative format. Method: HTML/Tailwind.
+        - Architectural Features -> Goal: Organize -> Viz: Icon-based Grid. Justification: Breaks down complex features into easily digestible visual categories. Method: HTML/Tailwind with Unicode characters.
+        - Visitor Trends -> Goal: Change -> Viz: Line Chart. Justification: Best method to show trends over time for multiple categories (domestic vs. foreign). Library: Chart.js.
+        - Conservation Spending -> Goal: Compare -> Viz: Horizontal Bar Chart. Justification: Ideal for comparing categorical data with long labels, ensuring readability. Library: Chart.js.
+        - Key Monuments in Complex -> Goal: Organize -> Viz: Card Grid. Justification: Presents related monuments in a structured, parallel format. Method: HTML/Tailwind.
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #E0E1DD; }
+        h1, h2, h3, .stat-number { font-family: 'Teko', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+    </style>
+</head>
+<body class="bg-[#E0E1DD] text-[#0D1B2A]">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+
+        <header class="text-center my-8">
+            <h1 class="text-6xl md:text-8xl font-bold text-[#1B263B]">QUTUB MINAR</h1>
+            <h2 class="text-3xl md:text-4xl text-[#415A77]">A MONUMENTAL HISTORY IN NUMBERS</h2>
+            <p class="max-w-3xl mx-auto mt-4 text-[#415A77]">From a symbol of conquest to a global icon, the story of the Qutub Minar is a chronicle of dynasties, architectural innovation, and enduring legacy, told through stone and statistics.</p>
+        </header>
+
+        <section id="big-numbers" class="my-16">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center">
+                <div class="bg-white/70 p-4 rounded-lg shadow-lg">
+                    <p class="stat-number text-6xl text-[#1B263B]">72.5</p>
+                    <p class="font-semibold text-lg text-[#415A77]">Meters High</p>
+                </div>
+                <div class="bg-white/70 p-4 rounded-lg shadow-lg">
+                    <p class="stat-number text-6xl text-[#1B263B]">379</p>
+                    <p class="font-semibold text-lg text-[#415A77]">Spiral Steps</p>
+                </div>
+                <div class="bg-white/70 p-4 rounded-lg shadow-lg">
+                    <p class="stat-number text-6xl text-[#1B263B]">5</p>
+                    <p class="font-semibold text-lg text-[#415A77]">Distinct Storeys</p>
+                </div>
+                <div class="bg-white/70 p-4 rounded-lg shadow-lg">
+                    <p class="stat-number text-6xl text-[#1B263B]">800+</p>
+                    <p class="font-semibold text-lg text-[#415A77]">Years of History</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="timeline" class="my-20">
+             <div class="text-center mb-12">
+                <h2 class="text-5xl font-bold text-[#1B263B]">A TOWER BUILT BY DYNASTIES</h2>
+                <p class="max-w-3xl mx-auto mt-2 text-[#415A77]">The Minar is a palimpsest of Indian history, with each phase of its construction reflecting the ambitions and aesthetics of different rulers over 300 years.</p>
+            </div>
+            <div class="relative wrap overflow-hidden p-4 md:p-10 h-full">
+                <div class="absolute border-2-2 border-opacity-20 border-[#415A77] h-full border" style="left: 50%"></div>
+                
+                <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-[#415A77] shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto font-semibold text-lg text-white">1</h1></div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-gray-800 text-xl">Qutb-ud-din Aibak <span class="font-light text-base">(c. 1199)</span></h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100">Laid the foundation and built the first storey as a victory tower.</p>
+                    </div>
+                </div>
+
+                <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-[#415A77] shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto text-white font-semibold text-lg">2</h1></div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-gray-800 text-xl">Iltutmish <span class="font-light text-base">(c. 1220)</span></h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100">Added the next three storeys, completing the original four-storey structure.</p>
+                    </div>
+                </div>
+                
+                <div class="mb-8 flex justify-between items-center w-full right-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-[#415A77] shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto font-semibold text-lg text-white">3</h1></div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-gray-800 text-xl">Firoz Shah Tughlaq <span class="font-light text-base">(1368)</span></h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100">After lightning damage, repaired and added the 4th and 5th storeys using marble.</p>
+                    </div>
+                </div>
+
+                <div class="mb-8 flex justify-between flex-row-reverse items-center w-full left-timeline">
+                    <div class="order-1 w-5/12"></div>
+                    <div class="z-20 flex items-center order-1 bg-[#415A77] shadow-xl w-8 h-8 rounded-full"><h1 class="mx-auto text-white font-semibold text-lg">4</h1></div>
+                    <div class="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4">
+                        <h3 class="font-bold text-gray-800 text-xl">Later Repairs <span class="font-light text-base">(1505 & 1828)</span></h3>
+                        <p class="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100">Restored by Sikandar Lodi after an earthquake and later repaired by the British Major Smith.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture" class="my-20">
+             <div class="text-center mb-12">
+                <h2 class="text-5xl font-bold text-[#1B263B]">ANATOMY OF A MASTERPIECE</h2>
+                <p class="max-w-3xl mx-auto mt-2 text-[#415A77]">The Minar's design is a fusion of Central Asian concepts and Indian craftsmanship, resulting in unique architectural features.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <p class="text-6xl">✨</p>
+                    <h3 class="text-2xl font-bold mt-2">FLUTED SHAFT</h3>
+                    <p>Alternating angular and rounded vertical columns create a stunning play of light and shadow.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <p class="text-6xl">📜</p>
+                    <h3 class="text-2xl font-bold mt-2">CALLIGRAPHY BANDS</h3>
+                    <p>Intricate Quranic verses and historical records are carved in elegant Kufic and Naskh scripts.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                     <p class="text-6xl">🍯</p>
+                    <h3 class="text-2xl font-bold mt-2">MUQARNAS CORBELS</h3>
+                    <p>Elaborate honeycomb-like brackets, a hallmark of Islamic design, support each projecting balcony.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="modern-era" class="my-20">
+             <div class="text-center mb-12">
+                <h2 class="text-5xl font-bold text-[#1B263B]">A MODERN ICON</h2>
+                <p class="max-w-3xl mx-auto mt-2 text-[#415A77]">Today, the Qutub Minar is a UNESCO World Heritage site, a top tourist destination, and the focus of continuous conservation efforts by the Archaeological Survey of India (ASI).</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-4">SURGING VISITOR NUMBERS (2021-2024)</h3>
+                    <p class="text-center text-sm text-[#415A77] mb-4">Post-pandemic, tourism has rebounded dramatically, with new attractions like a laser show boosting its popularity and making it the #2 destination for foreign tourists.</p>
+                    <div class="chart-container">
+                        <canvas id="visitorChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-4">CONSERVATION SPENDING (2021-24)</h3>
+                     <p class="text-center text-sm text-[#415A77] mb-4">The ASI consistently invests in preserving the complex, from structural repairs to managing water seepage and improving visitor infrastructure.</p>
+                    <div class="chart-container">
+                        <canvas id="conservationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="text-center mt-20 border-t-2 border-[#778DA9]/50 pt-8">
+            <p class="text-sm text-[#415A77]">Infographic created based on the "Qutub Minar Research Report" for educational purposes.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const visitorChartCtx = document.getElementById('visitorChart').getContext('2d');
+            new Chart(visitorChartCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2021-22', '2022-23', '2023-24'],
+                    datasets: [{
+                        label: 'Domestic Visitors',
+                        data: [476063, 1767548, 3123643],
+                        borderColor: '#1B263B',
+                        backgroundColor: 'rgba(27, 38, 59, 0.1)',
+                        fill: true,
+                        tension: 0.1,
+                        pointBackgroundColor: '#1B263B',
+                        pointRadius: 5
+                    }, {
+                        label: 'Foreign Visitors',
+                        data: [2849, 115247, 220017],
+                        borderColor: '#415A77',
+                        backgroundColor: 'rgba(65, 90, 119, 0.1)',
+                        fill: true,
+                        tension: 0.1,
+                        pointBackgroundColor: '#415A77',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { callback: (value) => value > 999999 ? `${value/1000000}M` : `${value/1000}K` } } },
+                    plugins: { tooltip: { callbacks: { title: (items) => items[0].label } } }
+                }
+            });
+
+            function wrapLabel(str, maxWidth) {
+                if (str.length <= maxWidth) return str;
+                const words = str.split(' ');
+                let lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + ' ' + word).trim().length > maxWidth && currentLine.length > 0) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = (currentLine + ' ' + word).trim();
+                    }
+                });
+                if(currentLine) lines.push(currentLine);
+                return lines;
+            }
+
+            const conservationLabels = [
+                'Restoration of Fallen Western Boundary Wall',
+                'Conservation of Quwwatul Islam Mosque Arch',
+                'Providing & Laying Bituminous Road',
+                'Providing & Fixing Tourist Friendly Wooden Passage',
+                'Providing & Fixing Signage',
+                'Conservation of Wells and Ancient Tank',
+                'Repair & Upgradation of Toilet Block'
+            ];
+            
+            const wrappedLabels = conservationLabels.map(label => wrapLabel(label, 16));
+
+            const conservationChartCtx = document.getElementById('conservationChart').getContext('2d');
+            new Chart(conservationChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: wrappedLabels,
+                    datasets: [{
+                        label: 'Expenditure (in Lakhs INR)',
+                        data: [19.41, 16.29, 13.61, 17.96, 15.81, 15.78, 13.54],
+                        backgroundColor: '#415A77',
+                        borderColor: '#1B263B',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { x: { beginAtZero: true, title: { display: true, text: 'Expenditure (in Lakhs INR)' } } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const item = tooltipItems[0];
+                                    let label = item.chart.data.labels[item.dataIndex];
+                                    return Array.isArray(label) ? label.join(' ') : label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

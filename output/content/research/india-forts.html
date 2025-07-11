@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: The Architectural Heritage of India</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Sandstone & Scroll -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard with four distinct, non-linear modules to deconstruct the dense report. The goal is to allow users to explore based on their interest (time, style, place, or data) rather than forcing a linear reading. The structure is: 1. A horizontal, clickable timeline for chronological exploration (Part I). 2. A side-by-side style comparator to analyze architectural DNA (Part III). 3. A tabbed regional explorer to browse key monuments geographically (Part II). 4. A data visualization dashboard for the modern legacy, focusing on tourism trends (Part IV). This structure transforms the report from a static document into a dynamic tool for inquiry, prioritizing user-driven discovery over passive consumption. -->
+    <!-- Visualization & Content Choices: 1. Timeline (Chronology -> Goal: Show Change -> Viz: Interactive HTML cards on a scrollable axis -> Interaction: Click to reveal details -> Justification: Breaks down dense history into digestible, user-selected chunks. -> Method: HTML/CSS/JS). 2. Style Comparison (Comparative Analysis -> Goal: Compare -> Viz: Dynamic content panels -> Interaction: Buttons to select and display style attributes side-by-side -> Justification: Makes abstract stylistic differences concrete and easily comparable. -> Method: HTML/JS). 3. Regional Monuments (Geography -> Goal: Organize -> Viz: Tabbed content with cards -> Interaction: Click tabs to filter monuments by region -> Justification: Provides a clear, organized geographical overview without needing a map. -> Method: HTML/JS). 4. Tourism Data (Economic Impact -> Goal: Inform/Analyze -> Viz: Bar Chart -> Interaction: Hover for tooltips showing specific data -> Justification: Visually represents the key finding of the "tourism paradox" (rising footfall, declining revenue) more effectively than text alone. -> Library: Chart.js). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FDF6E3; /* Warm neutral background */
+            color: #583e2e;
+        }
+        h1, h2, h3 {
+            font-family: 'Merriweather', serif;
+            color: #8B4513; /* SaddleBrown */
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #D2691E; /* Chocolate */
+            border-bottom-color: #D2691E;
+        }
+        .btn-primary {
+            background-color: #8B4513;
+            color: #FDF6E3;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #A0522D; /* Sienna */
+        }
+        .btn-secondary {
+            background-color: #F5DEB3; /* Wheat */
+            color: #8B4513;
+            transition: background-color 0.3s ease;
+        }
+        .btn-secondary.active, .btn-secondary:hover {
+            background-color: #D2B48C; /* Tan */
+        }
+        .timeline-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .timeline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-width: 800px;
+            max-height: 450px;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold">India's Architectural Heritage</h1>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#timeline" class="nav-link px-3 py-2 text-sm font-medium">Timeline</a>
+                    <a href="#styles" class="nav-link px-3 py-2 text-sm font-medium">Style Explorer</a>
+                    <a href="#regions" class="nav-link px-3 py-2 text-sm font-medium">Monuments</a>
+                    <a href="#legacy" class="nav-link px-3 py-2 text-sm font-medium">Living Legacy</a>
+                </div>
+                <div class="md:hidden">
+                    <select id="mobile-nav" class="bg-white border border-stone-300 rounded-md p-2 text-sm">
+                        <option value="#timeline">Timeline</option>
+                        <option value="#styles">Style Explorer</option>
+                        <option value="#regions">Monuments</option>
+                        <option value="#legacy">Living Legacy</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <section class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">The Enduring Edifices of a Civilization</h1>
+            <p class="max-w-4xl mx-auto text-lg text-stone-600">
+                This interactive report deconstructs the vast history of India's monumental architecture. Explore the evolution of empires through a dynamic timeline, compare the distinct features of major architectural styles, discover key monuments by region, and analyze the contemporary data shaping their future.
+            </p>
+        </section>
+
+        <section id="timeline" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Architectural Timeline</h2>
+            <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">This section provides an interactive chronological survey of India's architectural evolution. Click on any period to reveal its key characteristics and most significant structures. This visual journey traces the stylistic shifts and dominant influences that have shaped the subcontinent's built heritage over millennia.</p>
+            <div class="flex overflow-x-auto space-x-6 pb-4 -mx-4 px-4">
+            </div>
+        </section>
+
+        <div id="timeline-details" class="mb-20 p-6 bg-white rounded-lg shadow-lg" style="display: none;">
+        </div>
+
+        <section id="styles" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Style Explorer</h2>
+            <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">Compare the defining characteristics of India's major architectural styles side-by-side. Select a style to understand its core purpose, preferred materials, structural elements, and decorative motifs. This tool allows for a direct analytical comparison, highlighting the unique principles of power, faith, and culture embedded in their forms.</p>
+            <div class="text-center mb-8">
+                <div id="style-buttons" class="flex flex-wrap justify-center gap-2">
+                </div>
+            </div>
+            <div id="style-display" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-lg mb-2">Primary Purpose</h3>
+                    <p id="style-purpose" class="text-stone-700"></p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-lg mb-2">Key Structural Elements</h3>
+                    <p id="style-structure" class="text-stone-700"></p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-lg mb-2">Primary Materials</h3>
+                    <p id="style-materials" class="text-stone-700"></p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="font-bold text-lg mb-2">Key Decorative Motifs</h3>
+                    <p id="style-decoration" class="text-stone-700"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="regions" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-2">Regional Monument Explorer</h2>
+            <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">Discover how diverse architectural styles manifested across India's varied landscapes. Select a region to explore its most significant forts, palaces, and monuments. This section grounds the historical narrative in a geographical context, highlighting the unique heritage of each area.</p>
+            <div class="border-b border-stone-200">
+                <nav id="region-tabs" class="-mb-px flex space-x-6 justify-center" aria-label="Tabs">
+                </nav>
+            </div>
+            <div id="region-content" class="mt-8">
+            </div>
+        </section>
+
+        <section id="legacy" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-2">The Living Legacy: Tourism & Conservation</h2>
+            <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">This section examines the contemporary role of India's monuments. The chart below visualizes a crucial trend from the report: while total visitor numbers have increased post-pandemic, driven by domestic tourism, ticket revenue has paradoxically declined. This highlights the financial challenges and strategic questions facing heritage conservation today.</p>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center mb-4">Post-Pandemic Tourism Paradox (2019-20 vs 2023-24)</h3>
+                <div class="chart-container">
+                    <canvas id="tourismChart"></canvas>
+                </div>
+                 <div class="mt-6 text-sm text-stone-600 text-center">
+                    <p>The chart illustrates a significant shift: a <strong>+21.75%</strong> increase in domestic visitors has not offset a <strong>-16%</strong> drop in high-paying foreign visitors, leading to a <strong>-2.83%</strong> overall decline in revenue for 143 key monuments. This reveals a structural vulnerability in the funding model for heritage preservation.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-800 text-white mt-16">
+        <div class="container mx-auto py-6 px-4 text-center text-sm">
+            <p>Interactive report generated from "A Scholarly Report on the Forts, Palaces, and Monuments of India".</p>
+            <p>&copy; 2024 Architectural Heritage Interactive. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const timelineData = [
+                { period: "Indus Valley", dates: "c. 2600–1700 BCE", icon: "🏙️", color: "bg-amber-200", details: { title: "Pre-Classical Urbanism", summary: "Characterized by grid-planned cities, advanced drainage, and use of baked brick.", exemplars: "Mohenjo-daro, Harappa, Dholavira" } },
+                { period: "Mauryan Empire", dates: "c. 322–185 BCE", icon: "🏛️", color: "bg-orange-200", details: { title: "Early Imperial & Rock-cut", summary: "Monolithic polished stone pillars, stupas, and the first rock-cut caves. Architecture as a tool of the state.", exemplars: "Great Stupa at Sanchi, Ashokan Pillars" } },
+                { period: "Gupta Empire", dates: "4th–6th CE", icon: "🕉️", color: "bg-red-200", details: { title: "Early Hindu Temple", summary: "The emergence of the first structural Hindu temples, establishing the garbhagriha and shikhara.", exemplars: "Dashavatara Temple (Deogarh)" } },
+                { period: "Medieval Kingdoms", dates: "c. 7th–16th CE", icon: "🛕", color: "bg-rose-200", details: { title: "Dravidian (South) & Nagara (North)", summary: "Development of two distinct temple architectures. Dravidian features vimanas and gopurams; Nagara has curvilinear shikharas.", exemplars: "Mahabalipuram (Dravidian); Khajuraho (Nagara)" } },
+                { period: "Delhi Sultanate", dates: "c. 1206–1526 CE", icon: "🕌", color: "bg-lime-200", details: { title: "Early Indo-Islamic", summary: "Introduction of the arch and dome, calligraphy, and geometric patterns, often reusing materials from earlier structures.", exemplars: "Qutb Minar Complex (Delhi)" } },
+                { period: "Mughal Empire", dates: "c. 1526–1857 CE", icon: "👑", color: "bg-emerald-200", details: { title: "High Mughal Architecture", summary: "Zenith of Indo-Islamic style, defined by symmetry, bulbous domes, charbagh gardens, and exquisite use of red sandstone and white marble.", exemplars: "Taj Mahal, Red Fort, Humayun's Tomb" } },
+                { period: "Rajput Kingdoms", dates: "c. 7th–18th CE", icon: "🏰", color: "bg-yellow-200", details: { title: "Fortress Architecture", summary: "Formidable hill forts (durgas), ornate palaces with jharokhas and chhatris, and sophisticated water management systems.", exemplars: "Hill Forts of Rajasthan (Chittorgarh, Amer)" } },
+                { period: "Colonial Period", dates: "c. 18th–20th CE", icon: "🏛️", color: "bg-sky-200", details: { title: "Indo-Saracenic & European", summary: "A calculated fusion of European structural forms (Gothic, Neoclassical) with Indian decorative motifs to legitimize imperial rule.", exemplars: "CST (Mumbai), Victoria Memorial (Kolkata)" } },
+            ];
+
+            const styleData = {
+                Mughal: { purpose: "Imperial (forts, palaces), Funerary (tombs), Religious (mosques)", structure: "Bulbous Dome, Pishtaq (vaulted gateway), Minarets", materials: "Red Sandstone, White Marble", decoration: "Pietra Dura (inlay), Calligraphy, Jaali (latticework), Floral patterns" },
+                Rajput: { purpose: "Defensive (forts), Residential (palaces)", structure: "Corbelled Arches, Chhatris (pavilions), Jharokhas (balconies)", materials: "Local Sandstone, Granite, Marble", decoration: "Mirror Work (Sheesh Mahal), Murals, Intricate Stone Carving" },
+                Dravidian: { purpose: "Religious (temples)", structure: "Vimana (pyramidal tower), Gopuram (gateway tower), Mandapa (pillared hall)", materials: "Granite, Stone", decoration: "Profuse Sculptural Friezes of deities and mythological scenes" },
+                'Indo-Saracenic': { purpose: "Administrative (govt. buildings), Civic (stations, museums)", structure: "Pointed Arch, Ribbed Vault, Dome, Clock Tower", materials: "Brick, Concrete, Steel, Stone", decoration: "Fusion of Gothic tracery, Mughal patterns, and Neoclassical elements" }
+            };
+
+            const regionalData = {
+                North: [
+                    { name: "Red Fort", location: "Delhi", summary: "Vast Mughal fortress-palace of red sandstone, the seat of the empire." },
+                    { name: "Taj Mahal", location: "Agra", summary: "The zenith of Mughal architecture, an ivory-white marble mausoleum of perfect symmetry." },
+                    { name: "Amer Fort", location: "Jaipur", summary: "Iconic Rajput hill fort with significant Mughal architectural influence in its palaces." },
+                    { name: "Humayun's Tomb", location: "Delhi", summary: "The first great garden-tomb, a precursor that set the template for Mughal mausoleums." },
+                    { name: "Hawa Mahal", location: "Jaipur", summary: "Unique 'Palace of Breeze' with a five-story facade of 953 windows for royal women." },
+                ],
+                South: [
+                    { name: "Golconda Fort", location: "Telangana", summary: "A grand fortress renowned for its acoustics and history as a diamond trading center." },
+                    { name: "Mysore Palace", location: "Karnataka", summary: "A spectacular example of the Indo-Saracenic style, blending multiple traditions." },
+                    { name: "Gingee Fort", location: "Tamil Nadu", summary: "A massive complex of three fortified hills known as the 'Troy of the East'." },
+                    { name: "Warangal Fort", location: "Telangana", summary: "A 13th-century Kakatiya fort known for its massive, intricately carved stone gateways." },
+                    { name: "Badami Fort", location: "Karnataka", summary: "6th-century Chalukya fort perched on a hill, featuring rock-cut temples and carvings." },
+                ],
+                West: [
+                    { name: "Jaisalmer Fort", location: "Rajasthan", summary: "A 'living fort' of golden sandstone that seems to rise from the Thar Desert." },
+                    { name: "Mehrangarh Fort", location: "Jodhpur", summary: "An immense fort on a high hill, housing palaces with intricate carvings." },
+                    { name: "Daulatabad Fort", location: "Maharashtra", summary: "A virtually impregnable fortress atop a conical hill with ingenious defenses." },
+                    { name: "Murud-Janjira", location: "Maharashtra", summary: "An unconquered sea fort (Jala-durga) built on an island off the coast." },
+                    { name: "Junagarh Fort", location: "Bikaner", summary: "An impregnable bastion not on a hill but on the plains, with beautiful palaces inside." },
+                ],
+                "East & Himalayas": [
+                    { name: "Kangra Fort", location: "Himachal Pradesh", summary: "One of the oldest and largest forts in the Himalayas, seat of the ancient Katoch dynasty." },
+                    { name: "Sun Temple", location: "Konark, Odisha", summary: "A monumental 13th-century chariot-shaped temple dedicated to the sun god." },
+                    { name: "Victoria Memorial", location: "Kolkata", summary: "A grand marble monument blending British and Mughal styles, a symbol of the Raj." },
+                    { name: "Nalanda Mahavihara", location: "Bihar", summary: "Archaeological remains of a great monastic and scholastic institution from the Gupta period." },
+                ]
+            };
+
+            const timelineContainer = document.querySelector('#timeline .overflow-x-auto');
+            timelineData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `timeline-card flex-shrink-0 w-48 h-48 p-4 rounded-lg cursor-pointer flex flex-col items-center justify-center text-center ${item.color}`;
+                card.innerHTML = `<div class="text-4xl mb-2">${item.icon}</div><h3 class="font-bold">${item.period}</h3><p class="text-sm">${item.dates}</p>`;
+                card.addEventListener('click', () => showTimelineDetails(item.details));
+                timelineContainer.appendChild(card);
+            });
+
+            const timelineDetailsContainer = document.getElementById('timeline-details');
+            function showTimelineDetails(details) {
+                timelineDetailsContainer.style.display = 'block';
+                timelineDetailsContainer.innerHTML = `
+                    <h3 class="text-2xl font-bold mb-2">${details.title}</h3>
+                    <p class="text-stone-700 mb-4">${details.summary}</p>
+                    <p><strong>Key Exemplars:</strong> ${details.exemplars}</p>
+                `;
+                timelineDetailsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            const styleButtonsContainer = document.getElementById('style-buttons');
+            Object.keys(styleData).forEach((styleName, index) => {
+                const button = document.createElement('button');
+                button.className = 'btn-secondary px-4 py-2 rounded-md text-sm font-medium';
+                button.textContent = styleName;
+                button.addEventListener('click', (e) => {
+                    updateStyleDisplay(styleName);
+                    document.querySelectorAll('#style-buttons button').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
+                styleButtonsContainer.appendChild(button);
+                if (index === 0) {
+                    button.click();
+                }
+            });
+
+            function updateStyleDisplay(styleName) {
+                const data = styleData[styleName];
+                document.getElementById('style-purpose').textContent = data.purpose;
+                document.getElementById('style-structure').textContent = data.structure;
+                document.getElementById('style-materials').textContent = data.materials;
+                document.getElementById('style-decoration').textContent = data.decoration;
+            }
+
+            const regionTabsContainer = document.getElementById('region-tabs');
+            const regionContentContainer = document.getElementById('region-content');
+            Object.keys(regionalData).forEach((regionName, index) => {
+                const tab = document.createElement('a');
+                tab.href = '#';
+                tab.className = 'nav-link whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm';
+                tab.textContent = regionName;
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    updateRegionContent(regionName);
+                    document.querySelectorAll('#region-tabs a').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                });
+                regionTabsContainer.appendChild(tab);
+                if (index === 0) {
+                    tab.click();
+                }
+            });
+            
+            function updateRegionContent(regionName) {
+                const monuments = regionalData[regionName];
+                regionContentContainer.innerHTML = '';
+                const grid = document.createElement('div');
+                grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+                monuments.forEach(monument => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-lg shadow p-6';
+                    card.innerHTML = `
+                        <h4 class="font-bold text-xl mb-1">${monument.name}</h4>
+                        <p class="text-sm text-stone-500 mb-2">${monument.location}</p>
+                        <p class="text-stone-700">${monument.summary}</p>
+                    `;
+                    grid.appendChild(card);
+                });
+                regionContentContainer.appendChild(grid);
+            }
+
+            const tourismCtx = document.getElementById('tourismChart').getContext('2d');
+            new Chart(tourismCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Domestic Visitors', 'Foreign Visitors', 'Total Revenue'],
+                    datasets: [
+                        {
+                            label: '2019-20 (Baseline)',
+                            data: [100, 100, 100],
+                            backgroundColor: 'rgba(210, 180, 140, 0.6)', // Tan
+                            borderColor: 'rgba(210, 180, 140, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '2023-24 (% Change)',
+                            data: [121.75, 84, 97.17],
+                            backgroundColor: 'rgba(139, 69, 19, 0.6)', // SaddleBrown
+                            borderColor: 'rgba(139, 69, 19, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        title: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        const value = context.parsed.x;
+                                        const change = (value - 100).toFixed(2);
+                                        const symbol = change >= 0 ? '+' : '';
+                                        label += `${value.toFixed(2)}% (Change: ${symbol}${change}%)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                        },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Performance Index (Baseline = 100%)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const mobileNav = document.getElementById('mobile-nav');
+            mobileNav.addEventListener('change', (e) => {
+                const targetId = e.target.value;
+                document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
